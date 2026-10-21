@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>飞行棋 - 童年游戏合集</title>
+    <meta
+      name="description"
+      content="在线免费玩飞行棋，经典童年骰子棋盘游戏，支持多人对战，无需下载，即开即玩。"
+    />
+    <meta name="keywords" content="飞行棋,骰子游戏,棋盘游戏,童年游戏,在线游戏,免费游戏" />
+    <link
+      rel="canonical"
+      href="https://aloyshf.github.io/childhood/apps/dice-game/flying-chess/index.html"
+    />
+    <!-- Open Graph / 社交分享 -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="飞行棋 - 童年游戏合集" />
+    <meta
+      property="og:description"
+      content="在线免费玩飞行棋，经典童年骰子棋盘游戏，支持多人对战，无需下载，即开即玩。"
+    />
+    <meta
+      property="og:url"
+      content="https://aloyshf.github.io/childhood/apps/dice-game/flying-chess/index.html"
+    />
+    <meta property="og:site_name" content="童年游戏合集" />
+    <meta
+      property="og:image"
+      content="https://aloyshf.github.io/childhood/images/dice-game/%E9%A3%9E%E8%A1%8C%E6%A3%8B.jpg"
+    />
+    <meta property="og:image:alt" content="飞行棋 - 童年棋牌游戏在线玩" />
+    <meta property="og:locale" content="zh_CN" />
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="飞行棋 - 童年游戏合集" />
+    <meta
+      name="twitter:description"
+      content="在线免费玩飞行棋，经典童年骰子棋盘游戏，支持多人对战，无需下载，即开即玩。"
+    />
+    <meta
+      name="twitter:image"
+      content="https://aloyshf.github.io/childhood/images/dice-game/%E9%A3%9E%E8%A1%8C%E6%A3%8B.jpg"
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "VideoGame",
+            "name": "飞行棋",
+            "url": "https://aloyshf.github.io/childhood/apps/dice-game/flying-chess/index.html",
+            "image": "https://aloyshf.github.io/childhood/images/dice-game/%E9%A3%9E%E8%A1%8C%E6%A3%8B.jpg",
+            "description": "在线免费玩飞行棋，经典童年骰子棋盘游戏，支持多人对战，无需下载，即开即玩。",
+            "inLanguage": "zh-CN",
+            "genre": "欢乐骰子游戏",
+            "applicationCategory": "Game",
+            "gamePlatform": ["Web", "Browser"],
+            "operatingSystem": "Any",
+            "isAccessibleForFree": true,
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "CNY"
+            },
+            "publisher": {
+              "@type": "Person",
+              "name": "JiangXin"
+            }
+          },
+          {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "童年游戏合集",
+                "item": "https://aloyshf.github.io/childhood/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "欢乐骰子游戏",
+                "item": "https://aloyshf.github.io/childhood/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "飞行棋"
+              }
+            ]
+          }
+        ]
+      }
+    </script>
+    <link rel="stylesheet" href="game.css" />
+    <script src="../../../js/baidu-analytics.js?v=1"></script>
+    <script src="../../../js/common.js?v=21"></script>
+    <script src="../../common/ai-difficulty.js"></script>
+    <script src="../../common/webrtc-connection.js"></script>
+    <script src="../../common/network-game-protocol.js"></script>
+    <script src="../../common/room-ui.js"></script>
+    <link rel="stylesheet" href="../../common/room-ui.css" />
+  </head>
+  <body>
+    <!-- Game Settings -->
+    <div id="option-panel" class="option-panel">
+      <div class="option-content">
+        <h1 class="option-title">飞行棋</h1>
+        <p class="option-subtitle">经典飞行棋</p>
+        <form class="option-form" onsubmit="return false;">
+          <div class="form-grid">
+            <div class="form-group">
+              <span class="color-dot" style="background: #e53935"></span>
+              <label for="redUser">红方</label>
+              <select id="redUser">
+                <option value="normal" selected>玩家</option>
+                <option value="computer">电脑</option>
+                <option value="close">无</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <span class="color-dot" style="background: #1565c0"></span>
+              <label for="blueUser">蓝方</label>
+              <select id="blueUser">
+                <option value="normal">玩家</option>
+                <option value="computer" selected>电脑</option>
+                <option value="close">无</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <span class="color-dot" style="background: #f9a825"></span>
+              <label for="yellowUser">黄方</label>
+              <select id="yellowUser">
+                <option value="normal">玩家</option>
+                <option value="computer" selected>电脑</option>
+                <option value="close">无</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <span class="color-dot" style="background: #2e7d32"></span>
+              <label for="greenUser">绿方</label>
+              <select id="greenUser">
+                <option value="normal">玩家</option>
+                <option value="computer" selected>电脑</option>
+                <option value="close">无</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-grid form-grid-options">
+            <div class="form-group">
+              <label for="qifei">起飞点数</label>
+              <select id="qifei">
+                <option value="2,4,6">2, 4, 6</option>
+                <option value="5,6">5, 6</option>
+                <option value="6" selected>6</option>
+              </select>
+            </div>
+          </div>
+          <button type="button" id="begin" class="btn-begin">开始游戏</button>
+          <button
+            type="button"
+            id="btn-online"
+            class="btn-begin btn-online"
+            style="margin-top: 10px"
+          >
+            联网对战
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 联网猜拳选择界面 -->
+    <div id="rps-online" class="overlay" style="display: none">
+      <div class="overlay-content">
+        <h2>石头剪刀布 - 决定先手</h2>
+        <div class="rps-player">
+          <h3>你的选择</h3>
+          <div class="rps-buttons" id="rps-online-buttons">
+            <button class="btn btn-rps" data-player="online" data-choice="rock">✊ 石头</button>
+            <button class="btn btn-rps" data-player="online" data-choice="scissors">✌️ 剪刀</button>
+            <button class="btn btn-rps" data-player="online" data-choice="paper">🖐️ 布</button>
+          </div>
+          <p id="rps-online-status" class="rps-status">请选择</p>
+        </div>
+        <div id="rps-online-result" class="rps-result"></div>
+      </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div id="status-bar">
+      <div class="status-item">
+        <span class="label">当前行动方：</span>
+        <span id="current-player" class="team-indicator">—</span>
+      </div>
+      <div class="status-item">
+        <span class="status-color" style="color: #e53935">红</span>
+        <span id="type-red" class="status-type">玩家</span>
+        <span class="label">到达：</span><span id="count-red">0</span>/4
+      </div>
+      <div class="status-item">
+        <span class="status-color" style="color: #1565c0">蓝</span>
+        <span id="type-blue" class="status-type">电脑</span>
+        <span class="label">到达：</span><span id="count-blue">0</span>/4
+      </div>
+      <div class="status-item">
+        <span class="status-color" style="color: #f9a825">黄</span>
+        <span id="type-yellow" class="status-type">电脑</span>
+        <span class="label">到达：</span><span id="count-yellow">0</span>/4
+      </div>
+      <div class="status-item">
+        <span class="status-color" style="color: #2e7d32">绿</span>
+        <span id="type-green" class="status-type">电脑</span>
+        <span class="label">到达：</span><span id="count-green">0</span>/4
+      </div>
+    </div>
+
+    <!-- Main Game Area -->
+    <div id="game-main">
+      <div id="board-container" class="main" aria-label="飞行棋棋盘">
+        <!-- Dice -->
+        <div class="dice" id="dice">
+          <div class="slot slot1"></div>
+          <div class="slot slot2"></div>
+          <div class="slot slot3"></div>
+          <div class="slot slot4"></div>
+          <div class="slot slot5"></div>
+          <div class="slot slot6"></div>
+        </div>
+
+        <!-- Dice result display -->
+        <div id="sdnred" class="showdicenum sdnred"></div>
+        <div id="sdnblue" class="showdicenum sdnblue"></div>
+        <div id="sdnyellow" class="showdicenum sdnyellow"></div>
+        <div id="sdngreen" class="showdicenum sdngreen"></div>
+      </div>
+
+      <!-- Rules Panel -->
+      <div id="rules-panel">
+        <h3>📜 游戏规则</h3>
+        <div class="rule-section">
+          <h4>🛫 起飞规则</h4>
+          <ul>
+            <li id="rule-takeoff">掷到6飞机才能起飞</li>
+            <li>掷到6可以再掷一次</li>
+            <li>连续3次掷6，所有飞机回停机坪</li>
+          </ul>
+        </div>
+        <div class="rule-section">
+          <h4>🎲 移动规则</h4>
+          <ul>
+            <li>同色格可跳跃4格</li>
+            <li>同色带标记格可飞跃12格</li>
+          </ul>
+        </div>
+        <div class="rule-section">
+          <h4>💥 撞机规则</h4>
+          <ul>
+            <li>撞到对手飞机将其送回停机坪</li>
+          </ul>
+        </div>
+        <div class="rule-section">
+          <h4>🏆 胜负判定</h4>
+          <ul>
+            <li>4架飞机全部到达终点即获胜</li>
+          </ul>
+        </div>
+        <div id="rule-pve" class="rule-section">
+          <h4>🤖 人机模式</h4>
+          <ul>
+            <li>AI随机选择可移动的飞机</li>
+            <li>无策略，纯随机操作</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Computer turn overlay -->
+    <div class="shade">&nbsp;</div>
+
+    <!-- jQuery（本地离线版） -->
+    <script src="../../../vendor/jquery.min.js?v=1"></script>
+    <script>
+      var $j = jQuery.noConflict();
+    </script>
+    <!-- 轻量骰子滚动组件（本地） -->
+    <script src="../../../vendor/dice-roller.js?v=1"></script>
+    <!-- Game logic -->
+    <script src="../../common/sound-manager.js"></script>
+    <script src="board-renderer.js?v=2"></script>
+    <script src="ai.js"></script>
+    <script src="game.js?v=2"></script>
+  </body>
+</html>

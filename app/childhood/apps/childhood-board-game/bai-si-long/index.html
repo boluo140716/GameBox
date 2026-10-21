@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>摆四龙 - 童年游戏合集</title>
+  <meta name="description" content="在线免费玩摆四龙，经典童年棋盘游戏，4x4 交点棋盘双方各执 4 子在上下两行交叉布阵，每回合沿横竖斜方向走一步，最先将己方 4 子摆成一条直线即获胜，支持双人对战和人机对战，无需下载，即开即玩。">
+  <meta name="keywords" content="摆四龙,童年棋盘,四子连线,交点棋盘,棋盘游戏,策略游戏,在线游戏,免费游戏">
+  <link rel="canonical" href="https://aloyshf.github.io/childhood/apps/childhood-board-game/bai-si-long/index.html">
+  <!-- Open Graph / 社交分享 -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="摆四龙 - 童年游戏合集">
+  <meta property="og:description" content="在线免费玩摆四龙，经典童年棋盘游戏，4x4 交点棋盘双方各执 4 子在上下两行交叉布阵，每回合沿横竖斜方向走一步，最先将己方 4 子摆成一条直线即获胜，支持双人对战和人机对战，无需下载，即开即玩。">
+  <meta property="og:url" content="https://aloyshf.github.io/childhood/apps/childhood-board-game/bai-si-long/index.html">
+  <meta property="og:site_name" content="童年游戏合集">
+  <meta property="og:image" content="https://aloyshf.github.io/childhood/images/childhood-board-game/%E6%91%86%E5%9B%9B%E9%BE%99.jpg">
+  <meta property="og:image:alt" content="摆四龙 - 童年棋牌游戏在线玩">
+  <meta property="og:locale" content="zh_CN">
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="摆四龙 - 童年游戏合集">
+  <meta name="twitter:description" content="在线免费玩摆四龙，经典童年棋盘游戏，4x4 交点棋盘双方各执 4 子在上下两行交叉布阵，每回合沿横竖斜方向走一步，最先将己方 4 子摆成一条直线即获胜，支持双人对战和人机对战，无需下载，即开即玩。">
+  <meta name="twitter:image" content="https://aloyshf.github.io/childhood/images/childhood-board-game/%E6%91%86%E5%9B%9B%E9%BE%99.jpg">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "VideoGame",
+      "name": "摆四龙",
+      "url": "https://aloyshf.github.io/childhood/apps/childhood-board-game/bai-si-long/index.html",
+      "image": "https://aloyshf.github.io/childhood/images/childhood-board-game/%E6%91%86%E5%9B%9B%E9%BE%99.jpg",
+      "description": "在线免费玩摆四龙，经典童年棋盘游戏，4x4 交点棋盘双方各执 4 子在上下两行交叉布阵，每回合沿横竖斜方向走一步，最先将己方 4 子摆成一条直线即获胜，支持双人对战和人机对战，无需下载，即开即玩。",
+      "inLanguage": "zh-CN",
+      "genre": "童年棋盘游戏",
+      "applicationCategory": "Game",
+      "gamePlatform": [
+        "Web",
+        "Browser"
+      ],
+      "operatingSystem": "Any",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "CNY"
+      },
+      "publisher": {
+        "@type": "Person",
+        "name": "JiangXin"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "童年游戏合集",
+          "item": "https://aloyshf.github.io/childhood/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "童年棋盘游戏",
+          "item": "https://aloyshf.github.io/childhood/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "摆四龙"
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script src="../../../js/base-fix.js"></script>
+  <link rel="stylesheet" href="game.css">
+  <link rel="stylesheet" href="../board-theme.css">
+  <script src="../../../js/baidu-analytics.js?v=1"></script>
+  <script src="../../../js/common.js?v=21"></script>
+  <script src="../../common/ai-difficulty.js"></script>
+  <script src="../../common/game-utils.js"></script>
+  <script src="../../common/sound-manager.js"></script>
+  <script src="../../common/webrtc-connection.js"></script>
+  <script src="../../common/network-game-protocol.js"></script>
+  <script src="../../common/room-ui.js"></script>
+  <script src="../board-theme.js"></script>
+  <link rel="stylesheet" href="../../common/room-ui.css">
+</head>
+<body>
+
+  <!-- Mode Selection -->
+  <div id="mode-selection" class="overlay">
+    <div class="overlay-content">
+      <h1 class="game-title">摆四龙</h1>
+      <p class="subtitle">四子连成一条龙，谁先成龙谁为王</p>
+      <div class="mode-buttons">
+        <button id="btn-pvp" class="btn btn-pvp">双人对战</button>
+        <button id="btn-pve" class="btn btn-pve">人机对战</button>
+        <button id="btn-online" class="btn btn-online">联网对战</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RPS Selection -->
+  <div id="rps-section" class="overlay" style="display:none;">
+    <div class="overlay-content">
+      <h2>石头剪刀布 - 决定先手</h2>
+      <div id="rps-pvp" style="display:none;"></div>
+      <div id="rps-pve" style="display:none;">
+        <div class="rps-player">
+          <h3>你的选择</h3>
+          <div class="rps-buttons">
+            <button class="btn btn-rps" data-choice="rock">✊ 石头</button>
+            <button class="btn btn-rps" data-choice="scissors">✌️ 剪刀</button>
+            <button class="btn btn-rps" data-choice="paper">🖐️ 布</button>
+          </div>
+        </div>
+      </div>
+      <div id="rps-result" class="rps-result"></div>
+    </div>
+  </div>
+
+  <!-- 联网猜拳选择界面 -->
+  <div id="rps-online" class="overlay" style="display:none;">
+    <div class="overlay-content">
+      <h2>石头剪刀布 - 决定先手</h2>
+      <div class="rps-player">
+        <h3>你的选择</h3>
+        <div class="rps-buttons" id="rps-online-buttons">
+          <button class="btn btn-rps" data-player="online" data-choice="rock">✊ 石头</button>
+          <button class="btn btn-rps" data-player="online" data-choice="scissors">✌️ 剪刀</button>
+          <button class="btn btn-rps" data-player="online" data-choice="paper">🖐️ 布</button>
+        </div>
+        <p id="rps-online-status" class="rps-status">请选择</p>
+      </div>
+      <div id="rps-online-result" class="rps-result"></div>
+    </div>
+  </div>
+
+  <!-- Game Area -->
+  <div id="game-area" style="display:none;">
+    <div id="status-bar">
+      <div class="status-item">
+        <span class="label">当前行动方：</span>
+        <span id="current-player" class="team-indicator">—</span>
+      </div>
+      <div class="status-item">
+        <span class="label">回合：</span>
+        <span id="turn-count">0</span>
+      </div>
+      <div class="status-item">
+        <span class="label">上方可走：</span>
+        <span id="moves-a" class="team-a">0</span>
+      </div>
+      <div class="status-item">
+        <span class="label">下方可走：</span>
+        <span id="moves-b" class="team-b">0</span>
+      </div>
+    </div>
+
+    <div id="game-main">
+      <div id="board"></div>
+
+      <div id="rules-panel">
+        <h3>📜 游戏规则</h3>
+        <div class="rule-section">
+          <h4>🎮 棋盘与开局</h4>
+          <ul>
+            <li>横竖各 4 条线，棋子摆在 16 个交点上</li>
+            <li>双方各 4 子，固定开局摆在最上和最下两行，双方棋子交叉排列</li>
+            <li>石头剪刀布决定先手</li>
+          </ul>
+        </div>
+        <div class="rule-section">
+          <h4>🚶 走法</h4>
+          <ul>
+            <li>每回合沿连线移动己方一颗棋子</li>
+            <li>可横、竖、斜走，每次只走一步</li>
+            <li>目标交点必须是空位，不能跳子</li>
+          </ul>
+        </div>
+        <div class="rule-section">
+          <h4>🏆 胜利条件</h4>
+          <ul>
+            <li>己方 4 子在棋盘上连成一条直线即成「龙」</li>
+            <li>横、竖、斜任意方向均可</li>
+            <li>对方无子可走时也判为本方胜</li>
+          </ul>
+        </div>
+        <div id="rule-pve" class="rule-section">
+          <h4>🤖 人机模式</h4>
+          <ul>
+            <li>玩家执下方 (B)，电脑执上方 (A)</li>
+            <li>电脑会主动连子并阻断你的成龙路线</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div id="message"></div>
+  </div>
+
+  <!-- Game Over -->
+  <div id="game-over" class="overlay" style="display:none;">
+    <div class="overlay-content">
+      <h2 id="winner-text">游戏结束</h2>
+      <button id="btn-restart" class="btn btn-restart">重新开始</button>
+    </div>
+  </div>
+
+  <script src="ai.js"></script>
+  <script src="game.js?v=3"></script>
+</body>
+</html>

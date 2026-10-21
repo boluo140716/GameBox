@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>中国跳棋 - 童年游戏合集</title>
+  <meta name="description" content="在线免费玩中国跳棋，经典棋盘游戏，支持多人对战，无需下载，即开即玩。">
+  <meta name="keywords" content="中国跳棋,跳棋,棋盘游戏,在线游戏,免费游戏">
+  <link rel="canonical" href="https://aloyshf.github.io/childhood/apps/board-game/chinese-checkers/index.html">
+  <!-- Open Graph / 社交分享 -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="中国跳棋 - 童年游戏合集">
+  <meta property="og:description" content="在线免费玩中国跳棋，经典棋盘游戏，支持多人对战，无需下载，即开即玩。">
+  <meta property="og:url" content="https://aloyshf.github.io/childhood/apps/board-game/chinese-checkers/index.html">
+  <meta property="og:site_name" content="童年游戏合集">
+  <meta property="og:image" content="https://aloyshf.github.io/childhood/images/board-game/%E4%B8%AD%E5%9B%BD%E8%B7%B3%E6%A3%8B.jpg">
+  <meta property="og:image:alt" content="中国跳棋 - 童年棋牌游戏在线玩">
+  <meta property="og:locale" content="zh_CN">
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="中国跳棋 - 童年游戏合集">
+  <meta name="twitter:description" content="在线免费玩中国跳棋，经典棋盘游戏，支持多人对战，无需下载，即开即玩。">
+  <meta name="twitter:image" content="https://aloyshf.github.io/childhood/images/board-game/%E4%B8%AD%E5%9B%BD%E8%B7%B3%E6%A3%8B.jpg">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "VideoGame",
+      "name": "中国跳棋",
+      "url": "https://aloyshf.github.io/childhood/apps/board-game/chinese-checkers/index.html",
+      "image": "https://aloyshf.github.io/childhood/images/board-game/%E4%B8%AD%E5%9B%BD%E8%B7%B3%E6%A3%8B.jpg",
+      "description": "在线免费玩中国跳棋，经典棋盘游戏，支持多人对战，无需下载，即开即玩。",
+      "inLanguage": "zh-CN",
+      "genre": "经典棋盘游戏",
+      "applicationCategory": "Game",
+      "gamePlatform": [
+        "Web",
+        "Browser"
+      ],
+      "operatingSystem": "Any",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "CNY"
+      },
+      "publisher": {
+        "@type": "Person",
+        "name": "JiangXin"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "童年游戏合集",
+          "item": "https://aloyshf.github.io/childhood/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "经典棋盘游戏",
+          "item": "https://aloyshf.github.io/childhood/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "中国跳棋"
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script src="../../../js/base-fix.js"></script>
+  <link rel="stylesheet" href="game.css">
+  <link rel="stylesheet" href="../board-game-theme.css">
+  <script src="../../../js/baidu-analytics.js?v=1"></script>
+  <script src="../../../js/common.js?v=21"></script>
+  <script src="../../common/ai-difficulty.js"></script>
+  <script src="../../common/game-utils.js"></script>
+  <script src="../../common/sound-manager.js"></script>
+  <script src="../../common/webrtc-connection.js"></script>
+  <script src="../../common/network-game-protocol.js"></script>
+  <script src="../../common/room-ui.js"></script>
+  <link rel="stylesheet" href="../../common/room-ui.css">
+</head>
+<body>
+
+  <!-- 模式选择界面 -->
+  <div id="mode-selection" class="overlay">
+    <div class="overlay-content">
+      <h1 class="game-title">中国跳棋</h1>
+      <p class="subtitle">经典跳棋游戏</p>
+      <div class="seat-config">
+        <p class="seat-hint">选择每一方由谁来玩</p>
+        <div class="seat-grid">
+          <div class="seat-row">
+            <span class="color-dot" style="background:#f44336"></span>
+            <label for="seat-red">红方</label>
+            <select id="seat-red">
+              <option value="normal" selected>玩家</option>
+              <option value="computer">电脑</option>
+              <option value="close">无</option>
+            </select>
+          </div>
+          <div class="seat-row">
+            <span class="color-dot" style="background:#ffca28"></span>
+            <label for="seat-yellow">黄方</label>
+            <select id="seat-yellow">
+              <option value="normal">玩家</option>
+              <option value="computer">电脑</option>
+              <option value="close" selected>无</option>
+            </select>
+          </div>
+          <div class="seat-row">
+            <span class="color-dot" style="background:#2196f3"></span>
+            <label for="seat-blue">蓝方</label>
+            <select id="seat-blue">
+              <option value="normal">玩家</option>
+              <option value="computer">电脑</option>
+              <option value="close" selected>无</option>
+            </select>
+          </div>
+          <div class="seat-row">
+            <span class="color-dot" style="background:#ab47bc"></span>
+            <label for="seat-purple">紫方</label>
+            <select id="seat-purple">
+              <option value="normal">玩家</option>
+              <option value="computer" selected>电脑</option>
+              <option value="close">无</option>
+            </select>
+          </div>
+          <div class="seat-row">
+            <span class="color-dot" style="background:#ff9800"></span>
+            <label for="seat-orange">橙方</label>
+            <select id="seat-orange">
+              <option value="normal">玩家</option>
+              <option value="computer">电脑</option>
+              <option value="close" selected>无</option>
+            </select>
+          </div>
+          <div class="seat-row">
+            <span class="color-dot" style="background:#4caf50"></span>
+            <label for="seat-green">绿方</label>
+            <select id="seat-green">
+              <option value="normal">玩家</option>
+              <option value="computer">电脑</option>
+              <option value="close" selected>无</option>
+            </select>
+          </div>
+        </div>
+        <p id="seat-error" class="seat-error"></p>
+        <button id="btn-begin" class="btn btn-pvp">开始游戏</button>
+        <button id="btn-online" class="btn btn-online">联网对战</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 联网猜拳选择界面 -->
+  <div id="rps-online" class="overlay" style="display:none;">
+    <div class="overlay-content">
+      <h2>石头剪刀布 - 决定先手</h2>
+      <div class="rps-player">
+        <h3>你的选择</h3>
+        <div class="rps-buttons" id="rps-online-buttons">
+          <button class="btn btn-rps" data-player="online" data-choice="rock">✊ 石头</button>
+          <button class="btn btn-rps" data-player="online" data-choice="scissors">✌️ 剪刀</button>
+          <button class="btn btn-rps" data-player="online" data-choice="paper">🖐️ 布</button>
+        </div>
+        <p id="rps-online-status" class="rps-status">请选择</p>
+      </div>
+      <div id="rps-online-result" class="rps-result"></div>
+    </div>
+  </div>
+
+  <!-- 游戏区域 -->
+  <div id="game-area" style="display:none;">
+    <!-- 状态栏 -->
+    <div id="status-bar">
+      <div class="status-item">
+        <span class="label">当前行动方：</span>
+        <span id="current-player" class="team-indicator">—</span>
+      </div>
+      <div class="status-item">
+        <span class="label">回合：</span>
+        <span id="turn-count">0</span>
+      </div>
+    </div>
+
+    <!-- 主游戏区域：棋盘 + 规则面板 -->
+    <div id="game-main">
+      <!-- 棋盘 -->
+      <svg id="board-svg"></svg>
+
+      <!-- 游戏规则面板 -->
+      <div id="rules-panel">
+        <h3>📜 游戏规则</h3>
+        <div class="rule-section">
+          <h4>🎯 游戏目标</h4>
+          <ul>
+            <li>将棋子移动到对角的目标营（沿棋盘直线方向）</li>
+            <li>目标营 10 个点位全部被占满即获胜</li>
+            <li>防堵规则：目标营被占满时，只要其中至少一枚为己方棋子即判胜（防止对方赖在目标营堵死）</li>
+          </ul>
+        </div>
+        <div class="rule-section">
+          <h4>🎮 移动规则</h4>
+          <ul>
+            <li>相邻移动：沿棋盘直线移动到相邻空位</li>
+            <li>跳跃移动：越过紧邻的一枚棋子（任意颜色）落到其正后方空位</li>
+            <li>可连续跳跃，途中可变向；每次跳越只跨一枚棋子</li>
+            <li>棋子不会被吃掉</li>
+          </ul>
+        </div>
+        <div class="rule-section">
+          <h4>👥 玩家颜色</h4>
+          <ul id="color-rules"></ul>
+        </div>
+        <div id="rule-pve" class="rule-section">
+          <h4>🤖 人机模式</h4>
+          <ul>
+            <li>AI使用多因素加权贪心策略</li>
+            <li>综合前进距离、跳跃效率、目标区域等因素</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 操作提示信息区域 -->
+    <div id="message"></div>
+  </div>
+
+  <!-- 游戏结束界面 -->
+  <div id="game-over" class="overlay" style="display:none;">
+    <div class="overlay-content">
+      <h2 id="winner-text">游戏结束</h2>
+      <button id="btn-restart" class="btn btn-restart">重新开始</button>
+    </div>
+  </div>
+
+  <script src="../board-game-theme.js"></script>
+  <script src="ai.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

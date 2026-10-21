@@ -1,0 +1,825 @@
+/* =============================================
+   Monopoly Game — Layout inspired by Flying Chess
+   ============================================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  font-family: "Microsoft YaHei", "Comic Sans MS", "PingFang SC", sans-serif;
+  outline: transparent;
+  box-sizing: border-box;
+}
+
+li {
+  list-style-type: none;
+}
+
+html,
+body {
+  width: 100%;
+  min-height: 100vh;
+  background: #f5f0e1;
+  color: #454545;
+  font-size: 14px;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* =============================================
+   Setup Panel (Flying Chess style)
+   ============================================= */
+.option-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+.option-panel.hidden {
+  display: none;
+}
+
+.option-content {
+  background: #fff;
+  border-radius: 16px;
+  padding: 40px 48px;
+  text-align: center;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.option-title {
+  font-size: 42px;
+  margin-bottom: 4px;
+  color: #333;
+}
+
+.option-subtitle {
+  font-size: 15px;
+  color: #888;
+  margin-bottom: 24px;
+}
+
+.option-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-grid-options {
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+}
+
+.color-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.form-group label {
+  font-size: 14px;
+  color: #555;
+  flex-shrink: 0;
+  min-width: 48px;
+}
+
+.form-group select {
+  flex: 1;
+  padding: 8px 10px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #fff;
+  color: #333;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.form-group select:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.btn-begin {
+  padding: 14px 32px;
+  font-size: 18px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 600;
+  background: #333;
+  color: #fff;
+  width: 100%;
+}
+
+.btn-begin:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.btn-begin:active {
+  transform: translateY(0);
+}
+
+/* =============================================
+   Status Bar
+   ============================================= */
+#status-bar {
+  display: none;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 20px;
+  background: #fff;
+  border-radius: 10px;
+  margin: 10px auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  width: fit-content;
+  max-width: 900px;
+  font-size: 14px;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.status-item .label {
+  color: #888;
+}
+
+.team-indicator {
+  display: inline-block;
+  padding: 2px 12px;
+  border-radius: 4px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+#player-status {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.player-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: #f5f5f5;
+  font-size: 13px;
+  color: #333;
+  white-space: nowrap;
+}
+
+.player-chip.bankrupt {
+  opacity: 0.4;
+  text-decoration: line-through;
+}
+
+.chip-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* =============================================
+   Main Game Area
+   ============================================= */
+#game-main {
+  display: none;
+  gap: 20px;
+  align-items: flex-start;
+  justify-content: center;
+  margin: 0 auto;
+  padding: 0 10px;
+  width: 100%;
+  max-width: 1200px;
+  min-width: 0;
+}
+
+/* =============================================
+   Map (Board) — Flying Chess look: cream board,
+   flat palette cells with cream gaps
+   ============================================= */
+.map {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  grid-gap: 4px;
+  width: 960px;
+  max-width: 100%;
+  height: 400px;
+  background: #fffdca;
+  border: 1px solid #8a8a72;
+  border-radius: 10px;
+  padding: 4px;
+  flex-shrink: 0;
+}
+
+.box {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  text-align: center;
+  border-radius: 6px;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* Cream text on the coloured cell, like Flying Chess letters */
+.box h3 {
+  background: none;
+  color: #fffdca;
+  font-weight: 700;
+  position: absolute;
+  top: 4px;
+  left: 0;
+  font-size: 12px;
+  width: 100%;
+  height: 16px;
+  line-height: 16px;
+  overflow: hidden;
+  white-space: nowrap;
+  z-index: 1;
+}
+
+/* Icon inside a cream circle, echoing the board cells of Flying Chess */
+.cell-icon {
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #fffdca;
+  border: 3px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  line-height: 1;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Player tokens: Flying Chess badge style (colour disc, cream ring/text) */
+.box .chr {
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid #fffdca;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: #fffdca;
+  font-weight: bold;
+  z-index: 2;
+  animation: tokenBounce 0.3s ease;
+}
+
+@keyframes tokenBounce {
+  0% {
+    transform: translateX(-50%) scale(0.5);
+  }
+  50% {
+    transform: translateX(-50%) scale(1.2);
+  }
+  100% {
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+/* Center area — same cream as the board, with a Flying Chess
+   style pinwheel of chevrons pointing at the dice */
+.big-box {
+  position: relative;
+  background: none;
+  box-shadow: none;
+  grid-area: 2 / 2 / -2 / -2;
+  text-align: center;
+  border-radius: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.board-decor {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Dice area */
+.control {
+  position: relative;
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  border: 2px solid #8a8a72;
+  background: #fffdca;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  flex-shrink: 0;
+}
+
+.dice {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  cursor: pointer;
+  border-radius: 20px;
+  user-select: none;
+  overflow: hidden;
+}
+
+.slot {
+  width: 80px;
+  height: 80px;
+}
+
+.slot1 {
+  background-image: url("../../common/images/1.png");
+  background-size: cover;
+}
+.slot2 {
+  background-image: url("../../common/images/2.png");
+  background-size: cover;
+}
+.slot3 {
+  background-image: url("../../common/images/3.png");
+  background-size: cover;
+}
+.slot4 {
+  background-image: url("../../common/images/4.png");
+  background-size: cover;
+}
+.slot5 {
+  background-image: url("../../common/images/5.png");
+  background-size: cover;
+}
+.slot6 {
+  background-image: url("../../common/images/6.png");
+  background-size: cover;
+}
+
+.dice.pointer {
+  cursor: pointer;
+}
+
+/* Building sprites — flat inline SVG in the Flying Chess palette */
+.box .house {
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 64%;
+  z-index: 1;
+  pointer-events: none;
+  animation: buildingPop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.box .house svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Once a building stands, the type icon steps back */
+.box:has(.house) .cell-icon {
+  opacity: 0.3;
+}
+
+/* =============================================
+   Rules Panel (sidebar, always visible)
+   ============================================= */
+#rules-panel {
+  background: #fff;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  width: 220px;
+  font-size: 13px;
+  line-height: 1.6;
+  flex-shrink: 0;
+}
+
+#rules-panel h3 {
+  font-size: 16px;
+  margin-bottom: 12px;
+  color: #333;
+  border-bottom: 2px solid #8b5a2b;
+  padding-bottom: 8px;
+}
+
+.rule-section {
+  margin-bottom: 12px;
+}
+
+.rule-section h4 {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 4px;
+}
+
+.rule-section ul {
+  list-style: none;
+  padding-left: 4px;
+}
+
+.rule-section li {
+  color: #666;
+  padding: 1px 0;
+  font-size: 12px;
+}
+
+/* =============================================
+   Purchase/Upgrade Dialog
+   ============================================= */
+.dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  height: 200px;
+  border-radius: 13px;
+  background: #fff;
+  border: 3px solid #8a8a72;
+  display: none;
+  z-index: 10;
+}
+
+.dialog p {
+  width: 100%;
+  font-size: 18px;
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.dialog h2 {
+  background: #8a8a72;
+  color: #fffdca;
+  font-weight: 700;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 44px;
+  line-height: 44px;
+  text-indent: 1em;
+  font-size: 18px;
+  letter-spacing: 8px;
+  width: 100%;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.dialog .btn {
+  background: #f2f2f2;
+  width: 50%;
+  height: 20%;
+  position: absolute;
+  bottom: 0%;
+  text-align: center;
+  line-height: 40px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.dialog .btn:first-of-type {
+  left: 0;
+  border-bottom-left-radius: 8px;
+  color: #000;
+  box-shadow: -1px 0 silver inset;
+}
+
+.dialog .btn:last-of-type {
+  right: 0;
+  border-bottom-right-radius: 8px;
+}
+
+.dialog .btn:hover {
+  box-shadow: 0 5em inset silver;
+}
+
+/* =============================================
+   Message Box
+   ============================================= */
+.msgbox {
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 2px solid #8a8a72;
+  border-radius: 13px;
+  font-weight: 100;
+  font-size: 18px;
+  padding: 1.5em 2em;
+  background: #fffdca;
+  white-space: nowrap;
+  display: none;
+  z-index: 8;
+}
+
+/* =============================================
+   Property Info Card
+   ============================================= */
+.infobox {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 180px;
+  height: 260px;
+  border-radius: 13px;
+  background: #fffdca;
+  border: 3px solid #8a8a72;
+  display: none;
+  z-index: 6;
+}
+
+.infobox h2 {
+  background: #8a8a72;
+  color: #fffdca;
+  font-weight: 700;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 44px;
+  line-height: 44px;
+  text-indent: 1em;
+  font-size: 14px;
+  width: 100%;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.infobox ul {
+  width: 100%;
+  height: 80%;
+  position: absolute;
+  top: 20%;
+  left: 0;
+}
+
+.infobox li {
+  display: block;
+  width: calc(100% - 16px);
+  padding: 8px;
+  font-size: 13px;
+}
+
+/* =============================================
+   Construction pulse (replaces the old sprite clips)
+   ============================================= */
+.construct {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.construct::before,
+.construct::after {
+  content: "";
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 3px solid #fffdca;
+  opacity: 0;
+  animation: buildRing 0.55s ease-out 3;
+}
+
+.construct::after {
+  animation-delay: 0.18s;
+}
+
+@keyframes buildRing {
+  0% {
+    transform: scale(0.4);
+    opacity: 0.95;
+  }
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+@keyframes buildingPop {
+  0% {
+    transform: translateX(-50%) scale(0.2);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+  }
+}
+
+/* =============================================
+   Game Over Overlay
+   ============================================= */
+#game-over {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+#game-over .overlay-content {
+  background: #fff;
+  border-radius: 16px;
+  padding: 40px;
+  text-align: center;
+}
+
+#game-over h2 {
+  font-size: 1.8em;
+  margin-bottom: 16px;
+}
+
+#btn-restart {
+  display: inline-block;
+  padding: 12px 32px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1em;
+  cursor: pointer;
+  background: #333;
+  color: #fff;
+  font-weight: 600;
+  margin-top: 16px;
+}
+
+#btn-restart:hover {
+  opacity: 0.9;
+}
+
+/* =============================================
+   Game Over Overlay
+   ============================================= */
+@media (max-width: 1240px) {
+  #game-main {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #rules-panel {
+    width: 100%;
+    max-width: 960px;
+  }
+
+  .map {
+    width: 100%;
+    max-width: 960px;
+    height: auto;
+    aspect-ratio: 12 / 5;
+    flex-shrink: 1;
+  }
+}
+
+@media (max-width: 750px) {
+  .option-content {
+    padding: 28px 20px;
+  }
+
+  .option-title {
+    font-size: 32px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-grid-options {
+    grid-template-columns: 1fr;
+  }
+
+  .map {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 12 / 5;
+  }
+
+  .welcome {
+    font-size: 24px;
+  }
+
+  .choosebox {
+    width: 300px;
+    height: 220px;
+  }
+
+  .choosebox li {
+    font-size: 20px;
+    line-height: 80px;
+  }
+
+  .choosechr {
+    width: 90%;
+  }
+
+  .box h3 {
+    font-size: 8px;
+    height: 12px;
+    line-height: 12px;
+  }
+
+  .cell-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 15px;
+  }
+
+  .control {
+    width: 60px;
+    height: 60px;
+  }
+
+  .dice {
+    width: 40px;
+    height: 40px;
+  }
+
+  .slot {
+    width: 40px;
+    height: 40px;
+  }
+
+  #status-bar {
+    width: calc(100% - 16px);
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 10px;
+  }
+
+  #player-status {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .dialog {
+    width: 90%;
+  }
+
+  .msgbox {
+    font-size: 14px;
+    white-space: normal;
+    text-align: center;
+  }
+}

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+  <title>蜘蛛纸牌 · 单机</title>
+  <link rel="stylesheet" href="../theme.css?v=2" />
+  <link rel="stylesheet" href="spider.css?v=3" />
+</head>
+<body>
+  <div id="app" class="sp">
+    <header class="sp-top">
+      <div class="sp-stats">
+        <div class="stat"><small>完成</small><strong id="doneCount">0/8</strong></div>
+        <div class="stat"><small>步数</small><strong id="moveCount">0</strong></div>
+        <div class="stat"><small>用时</small><strong id="timer">000</strong></div>
+      </div>
+      <div class="sp-tools">
+        <div class="diffs" id="diffs" role="group" aria-label="难度">
+          <button class="chip active" data-diff="one">单花色</button>
+          <button class="chip" data-diff="two">双花色</button>
+          <button class="chip" data-diff="four">四花色</button>
+        </div>
+        <div class="sp-btns">
+          <button id="undoBtn" class="btn">↶ 撤销</button>
+          <button id="hintBtn" class="btn">💡 提示</button>
+          <button id="newBtn" class="btn primary">↻ 新一局</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="sp-tray">
+      <button id="stockBtn" class="stock" aria-label="发牌">
+        <span class="stock-back"></span>
+        <span class="stock-count" id="stockCount">50</span>
+      </button>
+      <div class="foundations" id="foundations" aria-label="已完成牌组"></div>
+      <span class="tray-hint" id="trayHint">点击同花色降序牌组，再点目标列</span>
+    </div>
+
+    <div class="board-wrap" id="boardWrap">
+      <div class="board" id="board" role="grid" aria-label="蜘蛛纸牌牌桌"></div>
+    </div>
+
+    <footer class="sp-foot">
+      <span id="bestText">最佳：--</span>
+      <span class="muted">单花色最简单 · 四花色最难</span>
+    </footer>
+
+    <div class="overlay" id="overlay" hidden>
+      <div class="overlay-card">
+        <h2 id="resultTitle">恭喜通关！</h2>
+        <p class="sub" id="resultSub"></p>
+        <div class="actions">
+          <button class="btn primary" id="againBtn">再来一局</button>
+          <button class="btn ghost" id="closeBtn">看看牌桌</button>
+        </div>
+      </div>
+    </div>
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <script src="spider.js?v=1"></script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+
+# Build outputs and release artifacts
+release/
+*.log
+
+# Local reference sources (not needed to build the app)
+_src/
+
+# Android generated files
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/capacitor-cordova-android-plugins/
+android/app/src/main/assets/public/
+android/app/src/main/assets/capacitor.config.json
+android/app/src/main/assets/capacitor.plugins.json
+android/app/src/main/res/xml/config.xml
+
+# Signing material
+*.jks
+*.keystore
+
+# Editor / OS files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.*

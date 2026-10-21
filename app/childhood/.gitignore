@@ -1,0 +1,40 @@
+# Eclipse project
+.settings/
+.classpath
+
+# IDEA project
+*.idea/
+*.iml
+
+# VS Code project
+.vscode/
+
+# VIM
+*.swp
+
+# Node.js
+node_modules/
+
+# Others
+tmp/
+*.log
+
+.kiro/
+.claude/
+
+sonar-report.xml
+
+# Tauri build outputs
+/dist/
+src-tauri/target/
+src-tauri/icons/
+src-tauri/gen/
+
+tmp/
+*.lock
+
+# Vitest coverage output
+coverage/
+
+# AI shootout baseline snapshots
+.tmp-ai-baseline/

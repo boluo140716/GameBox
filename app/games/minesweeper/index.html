@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+  <title>扫雷 · 单机</title>
+  <link rel="stylesheet" href="../theme.css?v=2" />
+  <link rel="stylesheet" href="minesweeper.css?v=3" />
+</head>
+<body>
+  <div id="app" class="ms">
+    <header class="ms-top">
+      <div class="ms-status">
+        <div class="stat">
+          <span class="stat-icon">💣</span>
+          <strong id="mineCount">10</strong>
+          <small>剩余雷</small>
+        </div>
+        <button id="faceBtn" class="face" aria-label="重新开始">🙂</button>
+        <div class="stat">
+          <span class="stat-icon">⏱</span>
+          <strong id="timer">000</strong>
+          <small>用时</small>
+        </div>
+      </div>
+      <div class="ms-tools">
+        <div class="diffs" id="diffs" role="group" aria-label="难度">
+          <button class="chip active" data-diff="beginner">初级 <em>9×9</em></button>
+          <button class="chip" data-diff="intermediate">中级 <em>16×16</em></button>
+          <button class="chip" data-diff="expert">高级 <em>16×30</em></button>
+        </div>
+        <button id="modeBtn" class="btn mode" aria-label="切换挖开/插旗">⛏ 挖开</button>
+      </div>
+    </header>
+
+    <div class="board-wrap" id="boardWrap">
+      <div class="board" id="board" role="grid" aria-label="扫雷棋盘"></div>
+    </div>
+
+    <footer class="ms-foot">
+      <span id="hintText">点击翻开 · 长按 / 右键插旗</span>
+      <span id="bestText">最佳：--</span>
+    </footer>
+
+    <div class="overlay" id="overlay" hidden>
+      <div class="overlay-card">
+        <h2 id="resultTitle">扫雷成功</h2>
+        <p class="sub" id="resultSub"></p>
+        <div class="actions">
+          <button class="btn primary" id="againBtn">再来一局</button>
+          <button class="btn ghost" id="closeBtn">看看棋盘</button>
+        </div>
+      </div>
+    </div>
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <script src="minesweeper.js?v=3"></script>
+</body>
+</html>

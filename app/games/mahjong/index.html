@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+  <title>麻将 · 单机</title>
+  <link rel="stylesheet" href="../theme.css?v=2" />
+  <link rel="stylesheet" href="mahjong.css?v=3" />
+</head>
+<body>
+  <div id="app" class="mj">
+    <main class="mj-table">
+      <!-- 对家 -->
+      <section class="opp top" id="opp2">
+        <div class="opp-head">
+          <div class="avatar">👧</div>
+          <div class="opp-meta">
+            <strong>阿静</strong>
+            <small id="count2">13 张</small>
+          </div>
+        </div>
+        <div class="opp-backs" id="backs2"></div>
+        <div class="melds" id="melds2"></div>
+      </section>
+
+      <!-- 左家 -->
+      <section class="opp left" id="opp3">
+        <div class="opp-head">
+          <div class="avatar">🧔</div>
+          <strong>阿福</strong>
+          <small id="count3">13 张</small>
+        </div>
+        <div class="opp-backs vertical" id="backs3"></div>
+        <div class="melds vertical" id="melds3"></div>
+      </section>
+
+      <!-- 右家 -->
+      <section class="opp right" id="opp1">
+        <div class="opp-head">
+          <div class="avatar">👩</div>
+          <strong>小满</strong>
+          <small id="count1">13 张</small>
+        </div>
+        <div class="opp-backs vertical" id="backs1"></div>
+        <div class="melds vertical" id="melds1"></div>
+      </section>
+
+      <!-- 中央牌池 -->
+      <div class="center">
+        <div class="center-top">
+          <span class="badge" id="wallBadge">牌墙 80</span>
+          <span class="last-hint" id="lastHint">准备开始</span>
+        </div>
+        <div class="pool" id="pool"></div>
+        <div class="claim-tip" id="claimTip"></div>
+      </div>
+
+      <!-- 自己 -->
+      <section class="self">
+        <div class="self-top">
+          <div class="self-id">
+            <div class="avatar you">🙂</div>
+            <strong>你</strong>
+            <span class="badge" id="youDealer" hidden>庄家</span>
+          </div>
+          <div class="melds" id="melds0"></div>
+        </div>
+        <div class="action-bar" id="actionBar"></div>
+        <div class="hand" id="hand"></div>
+      </section>
+    </main>
+
+    <div class="overlay" id="overlay" hidden>
+      <div class="overlay-card">
+        <h2 id="resultTitle">本局结束</h2>
+        <p class="sub" id="resultSub"></p>
+        <div class="actions">
+          <button class="btn primary" id="againBtn">再来一局</button>
+        </div>
+      </div>
+    </div>
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <script src="mahjong.js?v=4"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+{
+  "name": "gamebox",
+  "version": "1.8.1",
+  "description": "游戏盒 GameBox — 童年棋牌 × 重制街机",
+  "author": "GameBox",
+  "license": "MIT",
+  "main": "electron-main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist:win": "electron-builder --win portable",
+    "dist:android": "cd android && gradlew.bat assembleDebug"
+  },
+  "devDependencies": {
+    "@capacitor/android": "^6.2.0",
+    "@capacitor/cli": "^6.2.0",
+    "@capacitor/core": "^6.2.0",
+    "electron": "^33.4.11",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.gamebox.app",
+    "productName": "GameBox",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "electron-main.js",
+      "server.js",
+      "app/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        "portable"
+      ],
+      "icon": "build/icon.ico"
+    },
+    "portable": {
+      "artifactName": "GameBox-${version}.exe"
+    },
+    "compression": "maximum"
+  }
+}

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+  <title>华容道 · 经典</title>
+  <link rel="stylesheet" href="../theme.css?v=2" />
+  <link rel="stylesheet" href="klotski.css?v=3" />
+</head>
+<body>
+  <div id="app" class="hk">
+    <header class="hk-top">
+      <div class="hk-heading">
+        <span class="badge">经典</span>
+        <div>
+          <strong>横刀立马</strong>
+          <small>把曹操移到出口</small>
+        </div>
+      </div>
+      <div class="hk-stats">
+        <div class="stat"><small>步数</small><strong id="moves">0</strong></div>
+        <div class="stat"><small>用时</small><strong id="timer">000</strong></div>
+        <div class="stat"><small>最佳</small><strong id="best">--</strong></div>
+      </div>
+      <div class="hk-tools">
+        <button id="undoBtn" class="btn">↶ 撤销</button>
+        <button id="resetBtn" class="btn primary">↻ 重开</button>
+      </div>
+    </header>
+
+    <div class="board-wrap" id="boardWrap">
+      <div class="board" id="board">
+        <div class="exit" aria-hidden="true"><span>出口</span></div>
+      </div>
+    </div>
+
+    <footer class="hk-foot">
+      <div class="dpad" id="dpad" aria-label="移动方向">
+        <button data-dir="up" aria-label="上">↑</button>
+        <button data-dir="left" aria-label="左">←</button>
+        <button data-dir="down" aria-label="下">↓</button>
+        <button data-dir="right" aria-label="右">→</button>
+      </div>
+      <span class="hint">拖动方块，或选中后用方向键 / 下方按钮移动</span>
+    </footer>
+
+    <div class="overlay" id="overlay" hidden>
+      <div class="overlay-card">
+        <h2 id="resultTitle">曹操已脱险</h2>
+        <p class="sub" id="resultSub"></p>
+        <div class="actions">
+          <button class="btn primary" id="againBtn">再来一次</button>
+          <button class="btn ghost" id="closeBtn">看看棋盘</button>
+        </div>
+      </div>
+    </div>
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <script src="klotski.js?v=1"></script>
+</body>
+</html>

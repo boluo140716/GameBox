@@ -1,0 +1,12 @@
+{
+  "appId": "com.gamebox.app",
+  "appName": "游戏盒",
+  "webDir": "app",
+  "bundledWebRuntime": false,
+  "android": {
+    "allowMixedContent": false
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}

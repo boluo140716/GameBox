@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0b1220" />
+  <title>游戏盒 GameBox · 34 款经典小游戏</title>
+  <link rel="stylesheet" href="hub.css?v=2" />
+</head>
+<body>
+  <!-- ───────────── 首页 ───────────── -->
+  <div id="home" class="screen">
+    <header class="hero">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">🎮</div>
+        <div class="brand-text">
+          <h1>游戏盒</h1>
+          <p>34 款经典 · 全人机对战 · 打开即玩</p>
+        </div>
+      </div>
+      <label class="search">
+        <span aria-hidden="true">🔍</span>
+        <input id="searchInput" type="search" placeholder="搜索游戏，例如：象棋 / 华容道" autocomplete="off" />
+      </label>
+    </header>
+
+    <section class="featured-wrap" id="featuredWrap">
+      <div class="section-head">
+        <h2>经典四件套</h2>
+        <span class="section-note">2048 · 五子棋 · 中国象棋 · 华容道</span>
+      </div>
+      <div class="featured" id="featured"></div>
+    </section>
+
+    <nav class="chips" id="chips" aria-label="分类筛选">
+      <button class="chip active" data-cat="all">全部 <em>34</em></button>
+      <button class="chip" data-cat="childhood">童年棋牌 <em>27</em></button>
+      <button class="chip" data-cat="card">卡牌</button>
+      <button class="chip" data-cat="table">牌桌 <em>2</em></button>
+      <button class="chip" data-cat="arcade">街机休闲 <em>5</em></button>
+    </nav>
+
+    <main class="grid" id="grid" aria-live="polite"></main>
+    <div class="empty" id="empty" hidden>没有找到这个游戏，换个关键词试试。</div>
+
+    <footer class="foot">
+      <p>童年棋牌来自 <strong>AloysHF/childhood</strong> · 2048 与街机玩法已重制为本地版</p>
+      <p class="muted">已针对手机触屏适配 · 可离线游玩</p>
+    </footer>
+  </div>
+
+  <!-- ───────────── 游戏页 ───────────── -->
+  <section id="player" class="screen player" hidden>
+    <header class="player-bar">
+      <button id="backBtn" class="icon-btn" aria-label="返回游戏列表">←</button>
+      <div class="player-title">
+        <strong id="playerName">游戏</strong>
+        <span id="playerHint">建议横屏游玩</span>
+      </div>
+      <button id="reloadBtn" class="icon-btn" aria-label="重新载入">↻</button>
+    </header>
+    <div class="frame-wrap">
+      <iframe id="gameFrame" title="游戏画面" allow="autoplay; fullscreen; gamepad" allowfullscreen></iframe>
+      <div class="loader" id="loader"><span class="spinner"></span><span>正在进入游戏…</span></div>
+    </div>
+  </section>
+
+  <script src="games.js?v=9"></script>
+  <script src="hub.js?v=6"></script>
+</body>
+</html>

@@ -1,0 +1,471 @@
+/* ============================================================
+   Homepage styles - Category selector + cool effects
+   Carousel styles provided by jquery-yys-slider.css, not duplicated here
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+    font-family: 'Microsoft YaHei', 'trebuchet MS', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* ---- Category Selector ---- */
+.category-selector {
+    text-align: center;
+    padding: 40px 20px 20px;
+    position: relative;
+    z-index: 10;
+}
+
+.main-title {
+    font-size: 42px;
+    font-weight: bold;
+    background: linear-gradient(135deg, #f093fb, #f5576c, #4facfe, #00f2fe);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: titleGradient 5s ease infinite;
+    margin-bottom: 40px;
+    text-shadow: 0 0 40px rgba(79, 172, 254, 0.3);
+    letter-spacing: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+.title-logo {
+    width: 320px;
+    flex-shrink: 0;
+}
+
+@keyframes titleGradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.category-cards {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.category-card {
+    position: relative;
+    width: 240px;
+    height: 160px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    overflow: hidden;
+}
+
+.category-card:hover {
+    transform: translateY(-8px) scale(1.02);
+}
+
+.card-glow {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(79, 172, 254, 0.3) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s;
+    pointer-events: none;
+}
+
+.category-card:hover .card-glow {
+    opacity: 1;
+}
+
+.card-content {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.card-icon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 12px;
+    color: #fff;
+    opacity: 0.8;
+    transition: all 0.3s;
+}
+
+.category-card:hover .card-icon {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.card-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.card-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #fff;
+    margin: 0 0 6px;
+    letter-spacing: 4px;
+}
+
+.card-desc {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0;
+    letter-spacing: 2px;
+}
+
+.card-border {
+    position: absolute;
+    inset: 0;
+    border-radius: 20px;
+    padding: 2px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    transition: all 0.4s;
+}
+
+.category-card:hover .card-border {
+    background: linear-gradient(135deg, rgba(79, 172, 254, 0.5), rgba(0, 242, 254, 0.3));
+}
+
+.category-card.active {
+    background: rgba(79, 172, 254, 0.15);
+}
+
+.category-card.active .card-border {
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    animation: borderPulse 2s ease infinite;
+}
+
+@keyframes borderPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+.category-card.active .card-icon {
+    color: #4facfe;
+    opacity: 1;
+}
+
+/* ---- Game Area ---- */
+.game-section {
+    display: none;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.game-section.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+    animation: sectionFadeIn 0.6s ease forwards;
+}
+
+@keyframes sectionFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ---- Carousel Arrow Styles ---- */
+.gallery_container .prev,
+.gallery_container .next {
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.gallery_container .prev:hover,
+.gallery_container .next:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.gallery_container .prev::after,
+.gallery_container .next::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 30px;
+    height: 30px;
+    border-top: 3px solid rgba(255, 255, 255, 0.8);
+    border-left: 3px solid rgba(255, 255, 255, 0.8);
+    transition: all 0.3s;
+}
+
+.gallery_container .prev::after {
+    left: 40px;
+    transform: translateY(-50%) rotate(-45deg);
+}
+
+.gallery_container .next::after {
+    right: 40px;
+    transform: translateY(-50%) rotate(135deg);
+}
+
+.gallery_container .prev:hover::after,
+.gallery_container .next:hover::after {
+    border-color: #4facfe;
+    filter: drop-shadow(0 0 8px rgba(79, 172, 254, 0.8));
+}
+
+/* Card click ripple effect */
+.category-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 20px;
+    background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(79, 172, 254, 0.4) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+}
+
+.category-card:active::after {
+    opacity: 1;
+}
+
+/* Active state glow animation */
+.category-card.active .card-glow {
+    opacity: 0.5;
+    animation: activeGlow 2s ease-in-out infinite;
+}
+
+@keyframes activeGlow {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 0.7; }
+}
+
+/* ---- Mobile Responsive ---- */
+@media (max-width: 860px) {
+    .category-selector {
+        padding: 20px 16px 10px;
+    }
+
+    .main-title {
+        font-size: 28px;
+        margin-bottom: 24px;
+        letter-spacing: 4px;
+    }
+
+    .title-logo {
+        width: 240px;
+    }
+
+    .category-cards {
+        gap: 16px;
+    }
+
+    .category-card {
+        width: 160px;
+        height: 120px;
+    }
+
+    .card-icon {
+        width: 36px;
+        height: 36px;
+        margin-bottom: 8px;
+    }
+
+    .card-title {
+        font-size: 16px;
+    }
+
+    .card-desc {
+        font-size: 10px;
+    }
+
+    /* Reset plugin absolute positioning */
+    .content-part.part-tese {
+        height: auto !important;
+        position: static !important;
+        padding: 1.5em 16px 3em;
+    }
+
+    .part-tese .gallery_container {
+        position: static !important;
+        width: 100% !important;
+        height: auto !important;
+        margin: 0 !important;
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+
+    .part-tese .gallery_container .gallery_wrap,
+    .gallery_wrap.threeD_gallery_wrap {
+        position: static !important;
+        width: 100% !important;
+        height: auto !important;
+        margin: 0 !important;
+        perspective: none !important;
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+    }
+
+    /* Show all cards uniformly */
+    .threeD_gallery_item {
+        position: relative !important;
+        width: 100% !important;
+        height: 0 !important;
+        padding-bottom: 120% !important;
+        transform: none !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        z-index: auto !important;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+
+    .threeD_gallery_item img {
+        position: absolute !important;
+        top: 0;
+        left: 0;
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover;
+        visibility: visible !important;
+    }
+
+    .item-label {
+        position: absolute !important;
+        font-size: 1em !important;
+    }
+
+    /* Hide carousel arrows */
+    .gallery_container .prev,
+    .gallery_container .next {
+        display: none !important;
+    }
+
+    /* Hide line decorations */
+    .line-t, .line-r, .line-b, .line-l {
+        display: none !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-title {
+        font-size: 22px;
+        letter-spacing: 2px;
+    }
+
+    .title-logo {
+        width: 200px;
+    }
+
+    .category-cards {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .category-card {
+        width: 200px;
+        height: 100px;
+    }
+
+    .part-tese .gallery_container .gallery_wrap,
+    .gallery_wrap.threeD_gallery_wrap {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px;
+    }
+}
+
+/* ---- Particle Background Effect ---- */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,0.3), transparent),
+        radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.2), transparent),
+        radial-gradient(2px 2px at 50px 160px, rgba(255,255,255,0.3), transparent),
+        radial-gradient(2px 2px at 90px 40px, rgba(255,255,255,0.2), transparent),
+        radial-gradient(2px 2px at 130px 80px, rgba(255,255,255,0.3), transparent),
+        radial-gradient(2px 2px at 160px 120px, rgba(255,255,255,0.2), transparent);
+    background-repeat: repeat;
+    background-size: 200px 200px;
+    animation: particleFloat 30s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes particleFloat {
+    from { transform: translateY(0); }
+    to { transform: translateY(-200px); }
+}
+
+/* Ensure content above particles */
+.category-selector,
+.game-section {
+    position: relative;
+    z-index: 1;
+}
+
+/* Starry background enhancement */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background:
+        radial-gradient(1px 1px at 100px 200px, rgba(255,255,255,0.4), transparent),
+        radial-gradient(1px 1px at 300px 100px, rgba(255,255,255,0.3), transparent),
+        radial-gradient(1px 1px at 400px 300px, rgba(255,255,255,0.4), transparent),
+        radial-gradient(1px 1px at 200px 400px, rgba(255,255,255,0.3), transparent),
+        radial-gradient(1px 1px at 500px 150px, rgba(255,255,255,0.4), transparent),
+        radial-gradient(1px 1px at 600px 250px, rgba(255,255,255,0.3), transparent),
+        radial-gradient(1px 1px at 150px 350px, rgba(255,255,255,0.4), transparent),
+        radial-gradient(1px 1px at 350px 450px, rgba(255,255,255,0.3), transparent);
+    background-repeat: repeat;
+    background-size: 700px 500px;
+    animation: starsFloat 60s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes starsFloat {
+    from { transform: translateY(0) translateX(0); }
+    to { transform: translateY(-500px) translateX(-100px); }
+}
