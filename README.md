@@ -37,9 +37,7 @@
 |:---:|:---:|
 | ![麻将](docs/images/mahjong.png) | ![中国象棋](docs/images/chinese-chess.png) |
 
-| 童年游戏合集 | 2048 |
-|:---:|:---:|
-| ![童年游戏合集](docs/images/childhood.png) | ![2048](docs/images/g2048.png) |
+
 
 ## 成品
 
@@ -88,7 +86,7 @@
 - 斗地主：你 vs 两个 AI，盒豆场次、叫地主、炸弹、王炸、提示、再来一局
 - 麻将：推倒胡，你 vs 三个 AI，支持吃、碰、杠、胡，牌墙流局
 
-**童年棋牌（27 款，来自 AloysHF/childhood）**
+**童年棋牌（27 款）**
 
 - 卡牌：刀杀鸡、龙虎斗、兽棋、军师旅团营、猫捉老鼠、小皇帝、布告棋
 - 棋盘：黑白棋、五子棋、国际跳棋、中国象棋、国际象棋、军棋、中国跳棋、围棋、斗兽棋、将棋
@@ -170,9 +168,6 @@ gradlew.bat assembleDebug
 3. APK 使用 debug 签名，适合自己安装测试；上架应用商店需要自行生成 release keystore 并签名。
 4. 消消乐为休闲难度，AI 试玩与人工体验不能替代完整平衡性测试；后续可按实际手感调整目标分与步数。
 
-## 来源与许可
 
-- [AloysHF/childhood](https://github.com/AloysHF/childhood) — Apache License 2.0
-- 2048 为经典玩法的独立重制版；早期版本曾参考 [xthuji/xgames](https://github.com/xthuji/xgames)（MIT），该构建自 1.7.0 起已不再随包分发。\n- jQuery 4.0.0（MIT License）用于大富翁 / 飞行棋的本地交互逻辑。
 
 请保留原项目的 LICENSE 与版权声明。
