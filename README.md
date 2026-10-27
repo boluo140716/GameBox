@@ -6,16 +6,16 @@
 
 ---
 
-<p align="center"><strong>34 款经典小游戏，打开即玩。</strong></p>
+<p align="center"><strong>35 款经典小游戏，打开即玩。</strong></p>
 
-<p align="center">童年合集 · 2048 · 斗地主 · 麻将 · 中国象棋 · 飞行棋 · 大富翁</p>
+<p align="center">狼人杀 · 童年合集 · 2048 · 斗地主 · 麻将 · 中国象棋 · 飞行棋 · 大富翁</p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Electron-33.4-47848F?logo=electron&logoColor=white&labelColor=2B2B2B" alt="Electron" />
   <img src="https://img.shields.io/badge/Capacitor-6.2-119EFF?logo=capacitor&logoColor=white&labelColor=2B2B2B" alt="Capacitor" />
   <img src="https://img.shields.io/badge/Windows-10%2B-0078D4?logo=windows&logoColor=white&labelColor=2B2B2B" alt="Windows" />
   <img src="https://img.shields.io/badge/Android-5.1%2B-3DDC84?logo=android&logoColor=white&labelColor=2B2B2B" alt="Android" />
-  <img src="https://img.shields.io/badge/Games-34-FF6B6B?labelColor=2B2B2B" alt="34 款游戏" />
+  <img src="https://img.shields.io/badge/Games-35-FF6B6B?labelColor=2B2B2B" alt="35 款游戏" />
   <img src="https://img.shields.io/badge/License-MIT-3DA639?labelColor=2B2B2B" alt="License" />
 </p>
 
@@ -37,20 +37,22 @@
 |:---:|:---:|
 | ![麻将](docs/images/mahjong.png) | ![中国象棋](docs/images/chinese-chess.png) |
 
-
+| 童年游戏合集 | 2048 |
+|:---:|:---:|
+| ![童年游戏合集](docs/images/childhood.png) | ![2048](docs/images/g2048.png) |
 
 ## 成品
 
 | 平台 | 文件 | 说明 |
 |---|---|---|
-| Windows | `GameBox-1.8.1.exe` | 便携版，双击即用，无需安装（未签名，SmartScreen 可能提示） |
+| Windows | `GameBox-1.9.1.exe` | 便携版，双击即用，无需安装（未签名，SmartScreen 可能提示） |
 | Android | `GameBox.apk` | debug 签名，可直接安装（需允许未知来源） |
 
-> 源码仓库不包含 `node_modules`、`release` 构建产物和 `_src` 参考源；成品请按下方“构建”步骤生成。
+> 源码仓库不包含 `node_modules`、`release` 构建产物和 `_src` 参考源；成品请按下方“构建”步骤生成，或到 Releases 下载。
 
 ## 验证情况
 
-- 已在 Chromium 中实测：首页 34 款游戏渲染正常，2048 / 五子棋 / 华容道 / 蜘蛛纸牌 / 消消乐可进入、可退出，无控制台报错。
+- 已在 Chromium 中实测：首页 35 款游戏渲染正常，2048 / 五子棋 / 华容道 / 蜘蛛纸牌 / 消消乐 / 狼人杀可进入、可退出，无控制台报错。
 - 2048：重制为纯前端 4×4 版本；实测合并、得分、最高分、撤销、键盘方向键、触屏滑动、达成 2048、棋盘填满结算。
 - 消消乐：替换原连连看；实测相邻点击 / 滑动交换、三连消除、下落补充、连锁、连击、步数与目标、提示、洗牌、无解自动洗牌、过关 / 失败结算、下一关与难度切换。AI 自动试玩 8 步后无残留匹配、无空格、64 块完整。
 - 斗地主：300 局纯 AI 对战无非法牌型、无卡死；嵌入游戏盒后实测叫地主、提示、出牌、不出、退出正常。
@@ -71,20 +73,24 @@
 - 进入游戏加速：跳过猜拳结果的 1.5 秒等待，常见游戏约 0.2～0.8 秒进入；较慢的游戏会显示“正在进入…”过渡提示。
 - 童年游戏：实测国际跳棋 / 五子棋 / 刀杀鸡进入后自动人机、跳过模式菜单与猜拳；中国跳棋 / 飞行棋自动本地开局（玩家 vs 电脑）；右上角图标与“首页”按钮已移除。
 - 童年游戏 1.8.1：移除猜拳被自动跳过时的胜利 / 失败 / 平局音效；正常对局结束的胜利 / 失败 / 平局音效保留。
+- 狼人杀 1.9.1：6 人 / 9 人单机局，含预言家、女巫、猎人、遗言、观战与局后复盘；浏览器实测完整跑通“起跳 → 放逐 → 遗言”流程，控制台 0 报错，移动端 390×844 无横向溢出。
+- 狼人杀发言：纯本地规则生成，不依赖任何模型或网络；分场景控制篇幅（跳身份 16–50 字、追问 22–54、过 34–62、指控 44–80、保人 42–78、反驳 56–96），实测各 300 局平均 50.0 / 51.4 字，同局逐字重复 0%，跨局约 9–10%。
+- 狼人杀平衡：各 6,000 局模拟，6 人局好人胜率 47.8%、9 人局 39.2%。
 - Windows 便携版已实际启动，窗口标题与首页加载正常。
 - APK 已成功编译，包名 `com.gamebox.app`，应用名“游戏盒”，targetSdk 34，支持横竖屏。
 - 当前电脑未连接 Android 设备，APK 未做真机安装测试；如遇问题请告诉我具体机型与现象。
 
-## 包含的游戏（34 款）
+## 包含的游戏（35 款）
 
 所有游戏均为单机，进入默认人机对战，不需要联网。
 
 **经典四件套**：2048、五子棋、中国象棋、华容道
 
-**牌桌（2 款，游戏盒自研纯前端单机版）**
+**牌桌（3 款，游戏盒自研纯前端单机版）**
 
 - 斗地主：你 vs 两个 AI，盒豆场次、叫地主、炸弹、王炸、提示、再来一局
 - 麻将：推倒胡，你 vs 三个 AI，支持吃、碰、杠、胡，牌墙流局
+- 狼人杀：6 人 / 9 人单机局，你 vs 五个或八个规则 AI；发言、查验、用药、投票，出局后观战并支持局后复盘
 
 **童年棋牌（27 款）**
 
@@ -108,8 +114,11 @@ GameBox/
 ├─ app/                  # 合并后的前端（Capacitor 的 webDir）
 │  ├─ index.html         # 游戏盒首页
 │  ├─ hub.css / hub.js   # 首页与播放器
-│  ├─ games.js           # 34 款游戏清单
+│  ├─ games.js           # 35 款游戏清单
+│  ├─ covers/            # 游戏封面
+│  ├─ shared/            # 公共音效等
 │  ├─ games/
+│  │  ├─ werewolf/       # 狼人杀（6 / 9 人单机版）
 │  │  ├─ ddz/            # 斗地主（单机版）
 │  │  ├─ mahjong/        # 麻将（单机推倒胡）
 │  │  ├─ g2048/          # 2048（重制版）
@@ -152,6 +161,7 @@ gradlew.bat assembleDebug
 - 2048 重制为纯前端 4×4 版本，移除对 XGames 构建产物的依赖；支持撤销、最高分、键盘与触屏。
 - 连连看整体替换为消消乐玩法：相邻交换、三连消除、下落补充、连锁、连击、步数目标、关卡与星级。
 - 新增自研的纯前端单机斗地主与麻将（吃碰杠胡、AI 对战），不依赖服务端。
+- 新增自研单机狼人杀：6 / 9 人局、预言家 / 女巫 / 猎人技能、遗言与观战、局后复盘；AI 发言由本地 `speech.js` 组装，含场景化篇幅控制与两级去重，完全离线。
 - 童年游戏默认人机：隐藏双人/联网按钮与模式选择，自动跳过猜拳；移除右上角 GitHub / 反馈 / QQ / 收藏图标和“首页”按钮。
 - 修复军棋等使用 `data-opp-type="pve"` 的页面无法自动开局的问题；顺带兼容文字为“人机”的模式按钮。
 - 修复狼吃羊 / 蚂蚁搬家 / 摆四龙 / 四步钉等游戏因猜拳按钮结构不同而卡在空白页的问题。
@@ -167,7 +177,12 @@ gradlew.bat assembleDebug
 2. 斗地主与麻将为简化规则版本：不含癞子、加倍、抢地主、番数计算、抢杠胡等进阶规则；AI 为轻量启发式，强度适合休闲。
 3. APK 使用 debug 签名，适合自己安装测试；上架应用商店需要自行生成 release keystore 并签名。
 4. 消消乐为休闲难度，AI 试玩与人工体验不能替代完整平衡性测试；后续可按实际手感调整目标分与步数。
+5. 狼人杀 AI 发言为本地规则模板 + 随机组合，不是语言模型，偶尔仍会出现相似句式；跨局逐字重复约 9–10%，集中在“我先不收票”这类短句，以及报身份这类信息固定的句子。
+6. 狼人杀目前只有 6 人与 9 人两种人数配置，没有警长、白狼王等扩展角色。
 
+## 来源与许可
 
-
-请保留原项目的 LICENSE 与版权声明。
+- [AloysHF/childhood](https://github.com/AloysHF/childhood) — Apache License 2.0
+- 2048 为经典玩法的独立重制版；早期版本曾参考 [xthuji/xgames](https://github.com/xthuji/xgames)（MIT），该构建自 1.7.0 起已不再随包分发。
+- jQuery 4.0.0（MIT License）用于大富翁 / 飞行棋的本地交互逻辑。
+- GameBox 本身以 MIT License 发布。
