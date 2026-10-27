@@ -29,17 +29,21 @@ GameBox merges the **childhood game collection** with a set of **rebuilt offline
 
 ## Screenshots
 
-| GameBox home | Dou Dizhu |
+| GameBox home | Werewolf |
 |:---:|:---:|
-| ![GameBox home](docs/images/home.png) | ![Dou Dizhu](docs/images/ddz-room.png) |
+| ![GameBox home](docs/images/home.png) | ![Werewolf](docs/images/werewolf.png) |
 
-| Mahjong | Chinese Chess |
+| Dou Dizhu | Mahjong |
 |:---:|:---:|
-| ![Mahjong](docs/images/mahjong.png) | ![Chinese Chess](docs/images/chinese-chess.png) |
+| ![Dou Dizhu](docs/images/ddz-room.png) | ![Mahjong](docs/images/mahjong.png) |
 
-| Childhood collection | 2048 |
+| Chinese Chess | 2048 |
 |:---:|:---:|
-| ![Childhood collection](docs/images/childhood.png) | ![2048](docs/images/g2048.png) |
+| ![Chinese Chess](docs/images/chinese-chess.png) | ![2048](docs/images/g2048.png) |
+
+| Childhood collection | Monopoly |
+|:---:|:---:|
+| ![Childhood collection](docs/images/childhood.png) | ![Monopoly](docs/images/monopoly.png) |
 
 ## Included games (35)
 

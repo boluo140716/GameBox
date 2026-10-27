@@ -29,17 +29,21 @@
 
 ## 截图
 
-| 游戏盒首页 | 斗地主 |
+| 游戏盒首页 | 狼人杀 |
 |:---:|:---:|
-| ![游戏盒首页](docs/images/home.png) | ![斗地主](docs/images/ddz-room.png) |
+| ![游戏盒首页](docs/images/home.png) | ![狼人杀](docs/images/werewolf.png) |
 
-| 麻将 | 中国象棋 |
+| 斗地主 | 麻将 |
 |:---:|:---:|
-| ![麻将](docs/images/mahjong.png) | ![中国象棋](docs/images/chinese-chess.png) |
+| ![斗地主](docs/images/ddz-room.png) | ![麻将](docs/images/mahjong.png) |
 
-| 童年游戏合集 | 2048 |
+| 中国象棋 | 2048 |
 |:---:|:---:|
-| ![童年游戏合集](docs/images/childhood.png) | ![2048](docs/images/g2048.png) |
+| ![中国象棋](docs/images/chinese-chess.png) | ![2048](docs/images/g2048.png) |
+
+| 童年游戏合集 | 大富翁 |
+|:---:|:---:|
+| ![童年游戏合集](docs/images/childhood.png) | ![大富翁](docs/images/monopoly.png) |
 
 ## 成品
 
