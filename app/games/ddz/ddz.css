@@ -75,6 +75,43 @@
   font-size: 13px;
   font-variant-numeric: tabular-nums;
 }
+.sound-btn {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 26px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  background: rgba(5, 12, 18, .42);
+  color: #cfe0d8;
+  font: inherit;
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color .15s, background .15s, opacity .15s;
+}
+.sound-btn:hover {
+  border-color: rgba(255, 200, 87, .5);
+  background: rgba(255, 200, 87, .1);
+}
+.sound-btn.muted { opacity: .62; }
+
+/* 发牌飞行牌 */
+.deal-fly {
+  position: fixed;
+  z-index: 45;
+  width: 36px;
+  height: 50px;
+  border-radius: 5px;
+  border: 1px solid rgba(255, 255, 255, .2);
+  background:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, .12) 0 2px, transparent 2px 5px),
+    linear-gradient(145deg, #264a6b, #16293f);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .45);
+  pointer-events: none;
+  will-change: transform, opacity;
+}
 
 .ddz-table {
   flex: 1;
@@ -313,6 +350,36 @@
 
 /* ───────── 场次选择 / 结算 ───────── */
 .room-card { width: min(440px, 92vw); }
+
+/* 开局加倍 */
+.double-card { width: min(440px, 92vw); }
+.double-options {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 9px;
+  margin-top: 18px;
+}
+.double-options .btn {
+  width: 100%;
+  padding: 11px 14px;
+  font-size: 15px;
+}
+.double-options .btn.super {
+  background: linear-gradient(135deg, #ffb347, #e2662c);
+  border-color: transparent;
+  color: #2a1403;
+  font-weight: 900;
+}
+.double-note {
+  margin: 14px 0 0;
+  color: #93a5b9;
+  font-size: 11.5px;
+  line-height: 1.6;
+}
+@media (min-width: 430px) {
+  .double-options { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .double-options .btn { padding: 11px 6px; font-size: 13px; }
+}
 .room-wallet {
   margin: 14px 0 12px;
   padding: 8px 12px;
@@ -396,6 +463,8 @@
     font-size: 10px;
   }
   .wallet-chip strong { font-size: 12px; }
+  .sound-btn { width: 26px; height: 24px; font-size: 12px; }
+  .deal-fly { width: 30px; height: 42px; }
   .ddz-table {
     grid-template-columns: 82px minmax(0, 1fr) 82px;
     gap: 5px;
@@ -551,31 +620,167 @@
   background-size: auto;
   background-repeat: no-repeat;
 }
+.felt-ruby {
+  background-color: #3d1519;
+  background-image:
+    radial-gradient(ellipse 72% 62% at 50% 46%, rgba(255, 130, 140, .12), transparent 72%),
+    radial-gradient(ellipse 120% 100% at 50% 50%, transparent 52%, rgba(0, 0, 0, .48) 100%);
+  background-size: auto;
+  background-repeat: no-repeat;
+}
+.felt-ink {
+  background-color: #2b3036;
+  background-image:
+    repeating-linear-gradient(102deg, rgba(230, 238, 248, .035) 0 1px, transparent 1px 11px),
+    radial-gradient(ellipse 66% 54% at 38% 40%, rgba(220, 230, 245, .1), transparent 70%),
+    radial-gradient(ellipse 120% 100% at 50% 50%, transparent 52%, rgba(0, 0, 0, .46) 100%);
+  background-size: auto, auto, auto;
+  background-repeat: repeat, no-repeat, no-repeat;
+}
+.felt-aurora {
+  background-color: #101a2e;
+  background-image:
+    radial-gradient(ellipse 58% 48% at 24% 30%, rgba(80, 255, 200, .2), transparent 65%),
+    radial-gradient(ellipse 52% 44% at 76% 64%, rgba(150, 120, 255, .22), transparent 66%),
+    radial-gradient(ellipse 120% 100% at 50% 50%, transparent 52%, rgba(0, 0, 0, .5) 100%);
+  background-size: 160% 160%, 150% 150%, auto;
+  background-repeat: no-repeat;
+  animation: felt-aurora-drift 24s ease-in-out infinite alternate;
+}
+@keyframes felt-aurora-drift {
+  from { background-position: 0% 0%, 100% 100%, 0 0; }
+  to { background-position: 62% 42%, 38% 58%, 0 0; }
+}
+.felt-rosewood {
+  background-color: #2a1718;
+  background-image:
+    repeating-linear-gradient(92deg, rgba(255, 196, 150, .045) 0 1px, transparent 1px 8px),
+    radial-gradient(ellipse 72% 62% at 50% 46%, rgba(208, 118, 100, .13), transparent 72%),
+    radial-gradient(ellipse 120% 100% at 50% 50%, transparent 52%, rgba(0, 0, 0, .5) 100%);
+  background-size: auto;
+  background-repeat: repeat, no-repeat, no-repeat;
+}
+.felt-slate {
+  background-color: #232b2f;
+  background-image:
+    repeating-linear-gradient(112deg, rgba(220, 238, 245, .035) 0 1px, transparent 1px 13px),
+    radial-gradient(ellipse 66% 54% at 42% 38%, rgba(170, 205, 215, .11), transparent 70%),
+    radial-gradient(ellipse 120% 100% at 50% 50%, transparent 52%, rgba(0, 0, 0, .5) 100%);
+  background-size: auto, auto, auto;
+  background-repeat: repeat, no-repeat, no-repeat;
+}
+.felt-peach {
+  background-color: #3a2327;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(255, 210, 205, .025) 0 1px, transparent 1px 5px),
+    radial-gradient(ellipse 70% 58% at 48% 44%, rgba(255, 160, 170, .13), transparent 72%),
+    radial-gradient(ellipse 120% 100% at 50% 50%, transparent 52%, rgba(42, 10, 16, .52) 100%);
+  background-size: auto;
+  background-repeat: repeat, no-repeat, no-repeat;
+}
+.felt-ocean {
+  background-color: #0a2c33;
+  background-image:
+    repeating-linear-gradient(168deg, rgba(160, 255, 235, .04) 0 1px, transparent 1px 10px),
+    radial-gradient(ellipse 60% 46% at 65% 28%, rgba(75, 220, 215, .13), transparent 68%),
+    radial-gradient(ellipse 120% 100% at 50% 50%, transparent 52%, rgba(0, 12, 17, .55) 100%);
+  background-size: auto, auto, auto;
+  background-repeat: repeat, no-repeat, no-repeat;
+}
 
 /* 牌背 */
 .shop-back.back-red,
 .ddz.back-red .back-card,
-.ddz.back-red .card.back {
+.ddz.back-red .card.back,
+.deal-fly.back-red {
   background:
     repeating-linear-gradient(45deg, rgba(255, 220, 150, .2) 0 2px, transparent 2px 6px),
     linear-gradient(145deg, #8d2f3f, #4a1824);
 }
 .shop-back.back-bamboo,
 .ddz.back-bamboo .back-card,
-.ddz.back-bamboo .card.back {
+.ddz.back-bamboo .card.back,
+.deal-fly.back-bamboo {
   background:
     repeating-linear-gradient(90deg, rgba(180, 255, 210, .13) 0 2px, transparent 2px 6px),
     linear-gradient(145deg, #2e6a55, #173b32);
 }
 .shop-back.back-night,
 .ddz.back-night .back-card,
-.ddz.back-night .card.back {
+.ddz.back-night .card.back,
+.deal-fly.back-night {
   background:
     radial-gradient(circle at 25% 25%, rgba(255, 255, 255, .9) 0 1px, transparent 1.5px),
     radial-gradient(circle at 70% 65%, rgba(180, 210, 255, .8) 0 1px, transparent 1.5px),
     radial-gradient(circle at 40% 80%, rgba(255, 230, 160, .75) 0 1px, transparent 1.5px),
     linear-gradient(145deg, #1a2450, #0c122c);
   background-size: 22px 22px, 31px 31px, 18px 18px, auto;
+}
+.shop-back.back-plaid,
+.ddz.back-plaid .back-card,
+.ddz.back-plaid .card.back,
+.deal-fly.back-plaid {
+  background:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, .13) 0 3px, transparent 3px 9px),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, .13) 0 3px, transparent 3px 9px),
+    linear-gradient(145deg, #2b3a52, #182436);
+}
+.shop-back.back-gold,
+.ddz.back-gold .back-card,
+.ddz.back-gold .card.back,
+.deal-fly.back-gold {
+  background:
+    repeating-linear-gradient(45deg, rgba(255, 214, 130, .34) 0 1px, transparent 1px 7px),
+    radial-gradient(circle at 50% 38%, rgba(255, 200, 90, .24), transparent 70%),
+    linear-gradient(145deg, #3b2c12, #1c1508);
+}
+.shop-back.back-aurora,
+.ddz.back-aurora .back-card,
+.ddz.back-aurora .card.back,
+.deal-fly.back-aurora {
+  background:
+    radial-gradient(ellipse at 28% 18%, rgba(90, 255, 215, .3), transparent 60%),
+    radial-gradient(ellipse at 72% 82%, rgba(160, 130, 255, .32), transparent 62%),
+    linear-gradient(145deg, #14243a, #0d1326);
+}
+.shop-back.back-celadon,
+.ddz.back-celadon .back-card,
+.ddz.back-celadon .card.back,
+.deal-fly.back-celadon {
+  background:
+    repeating-linear-gradient(118deg, rgba(225, 255, 238, .10) 0 1px, transparent 1px 8px),
+    radial-gradient(ellipse at 35% 22%, rgba(190, 240, 220, .18), transparent 62%),
+    linear-gradient(145deg, #4a6a5e, #223830);
+}
+.shop-back.back-plum,
+.ddz.back-plum .back-card,
+.ddz.back-plum .card.back,
+.deal-fly.back-plum {
+  background:
+    radial-gradient(circle at 28% 30%, rgba(255, 234, 238, .35) 0 2px, transparent 3px),
+    radial-gradient(circle at 68% 70%, rgba(255, 220, 230, .25) 0 2px, transparent 3px),
+    radial-gradient(circle at 76% 24%, rgba(255, 240, 242, .2) 0 1px, transparent 2px),
+    linear-gradient(145deg, #542833, #2a111a);
+  background-size: 31px 31px, 37px 37px, 23px 23px, auto;
+}
+.shop-back.back-cloud,
+.ddz.back-cloud .back-card,
+.ddz.back-cloud .card.back,
+.deal-fly.back-cloud {
+  background:
+    repeating-radial-gradient(ellipse at 50% 118%, rgba(210, 230, 255, .12) 0 2px, transparent 7px 17px),
+    linear-gradient(145deg, #243a58, #111b30);
+}
+.shop-back.back-ember,
+.ddz.back-ember .back-card,
+.ddz.back-ember .card.back,
+.deal-fly.back-ember {
+  background:
+    radial-gradient(circle at 30% 24%, rgba(255, 196, 92, .6) 0 1px, transparent 2px),
+    radial-gradient(circle at 70% 62%, rgba(255, 120, 70, .5) 0 1px, transparent 2px),
+    radial-gradient(circle at 44% 82%, rgba(255, 214, 140, .45) 0 1px, transparent 2px),
+    linear-gradient(145deg, #3b1512, #120707);
+  background-size: 23px 23px, 31px 31px, 19px 19px, auto;
 }
 
 /* 头像框 */
@@ -599,10 +804,184 @@
   border: 2px solid #ff7a83;
   box-shadow: 0 0 0 2px rgba(255, 122, 131, .18), 0 0 16px rgba(255, 122, 131, .34), inset 0 1px 0 rgba(255, 255, 255, .18);
 }
+.frame-silver {
+  border: 2px solid #cfd8e3;
+  box-shadow: 0 0 0 2px rgba(207, 216, 227, .14), 0 0 12px rgba(207, 216, 227, .26), inset 0 1px 0 rgba(255, 255, 255, .28);
+}
+.frame-leaf {
+  border: 2px solid #8fd68a;
+  box-shadow: 0 0 0 2px rgba(143, 214, 138, .14), 0 0 14px rgba(143, 214, 138, .28), inset 0 1px 0 rgba(255, 255, 255, .18);
+}
+.frame-neon {
+  border: 2px solid #7ef0ff;
+  box-shadow: 0 0 0 2px rgba(126, 240, 255, .2), 0 0 16px rgba(126, 240, 255, .55), 0 0 26px rgba(190, 120, 255, .35);
+}
+.frame-crown {
+  border: 2px solid #ffd98a;
+  box-shadow: 0 0 0 2px rgba(255, 217, 138, .22), 0 0 18px rgba(255, 200, 87, .48), 0 0 34px rgba(255, 160, 60, .26), inset 0 1px 0 rgba(255, 255, 255, .22);
+  animation: frame-crown-glow 3.4s ease-in-out infinite;
+}
+@keyframes frame-crown-glow {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(255, 217, 138, .22), 0 0 14px rgba(255, 200, 87, .38), 0 0 26px rgba(255, 160, 60, .2), inset 0 1px 0 rgba(255, 255, 255, .22); }
+  50% { box-shadow: 0 0 0 2px rgba(255, 217, 138, .34), 0 0 22px rgba(255, 200, 87, .62), 0 0 40px rgba(255, 160, 60, .34), inset 0 1px 0 rgba(255, 255, 255, .3); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .felt-aurora { animation: none; }
+  .frame-crown { animation: none; }
+}
 
 @media (max-width: 720px) {
   .self-title, .ai-title { font-size: 8px; padding: 1px 5px; }
   .self-title { font-size: 9px; }
   .result-shop-link { font-size: 11px; }
   .room-shop-link { font-size: 11px; padding: 7px 10px; }
+}
+
+/* ───────── 每日契约 / 连胜 / 复仇 ───────── */
+.mission-btn {
+  position: relative;
+  flex: 0 0 auto;
+  width: 28px;
+  height: 26px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  background: rgba(5, 12, 18, .42);
+  color: #cfe0d8;
+  font: inherit;
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+}
+.mission-btn:hover { border-color: rgba(255, 200, 87, .5); background: rgba(255, 200, 87, .1); }
+.mission-btn.has-reward { border-color: rgba(255, 200, 87, .62); box-shadow: 0 0 0 2px rgba(255, 200, 87, .12); }
+.mission-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 3px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffc857, #ff7a45);
+  color: #2a1403;
+  font-size: 9px;
+  font-weight: 900;
+  line-height: 14px;
+  text-align: center;
+}
+.mission-badge[hidden] { display: none; }
+
+.streak-badge {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 159, 67, .5);
+  background: linear-gradient(135deg, rgba(255, 200, 87, .22), rgba(255, 122, 69, .16));
+  color: #ffd88f;
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: .4px;
+  line-height: 1.5;
+}
+.streak-badge[hidden] { display: none; }
+
+.result-revenge {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 9px 12px;
+  border-radius: 11px;
+  border: 1px solid rgba(255, 107, 107, .48);
+  background: linear-gradient(135deg, rgba(255, 107, 107, .22), rgba(255, 159, 67, .16));
+  color: #ffd7d7;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .3px;
+  cursor: pointer;
+}
+.result-revenge:hover { border-color: rgba(255, 107, 107, .75); background: rgba(255, 107, 107, .3); }
+.result-revenge[hidden] { display: none; }
+
+.mission-card {
+  position: relative;
+  width: min(480px, 94vw);
+  text-align: left;
+}
+.mission-card h2,
+.mission-card .sub { text-align: center; }
+.mission-list { display: grid; gap: 10px; margin-top: 16px; }
+.mission-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  background: rgba(255, 255, 255, .04);
+}
+.mission-row.done { border-color: rgba(255, 200, 87, .38); background: rgba(255, 200, 87, .07); }
+.mission-row.claimed { opacity: .62; }
+.mission-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.mission-info strong { font-size: 13px; }
+.mission-info small { color: var(--gb-muted); font-size: 11px; }
+.mission-bar {
+  height: 5px;
+  margin-top: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .09);
+  overflow: hidden;
+}
+.mission-bar i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ffc857, #ff9f43);
+  transition: width .3s ease;
+}
+.mission-side { flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.mission-count { color: var(--gb-muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.mission-claim {
+  min-width: 86px;
+  padding: 6px 10px;
+  border-radius: 9px;
+  border: 1px solid rgba(255, 200, 87, .4);
+  background: linear-gradient(135deg, #ffc857, #ff9f43);
+  color: #2a1403;
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 900;
+  cursor: pointer;
+}
+.mission-claim:disabled {
+  border-color: rgba(255, 255, 255, .12);
+  background: rgba(255, 255, 255, .06);
+  color: #8fa1b9;
+  font-weight: 600;
+  cursor: default;
+}
+.mission-note { margin: 14px 0 0; color: #7f90a8; font-size: 11px; text-align: center; }
+.mission-close { position: absolute; top: 12px; right: 12px; }
+
+@media (max-width: 720px) {
+  .mission-btn { width: 26px; height: 24px; font-size: 12px; }
+  .streak-badge { font-size: 8.5px; }
+  .mission-card { width: min(94vw, 440px); }
+  .mission-row { padding: 10px; gap: 8px; }
+  .mission-claim { min-width: 74px; font-size: 10.5px; }
+}
+
+/* 结算内容可能较长（连胜、契约、对手反应），允许在卡片内滚动 */
+#overlay .overlay-card {
+  max-height: 88vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 200, 87, .35) transparent;
+}
+#overlay .overlay-card::-webkit-scrollbar { width: 5px; }
+#overlay .overlay-card::-webkit-scrollbar-thumb {
+  border-radius: 99px;
+  background: rgba(255, 200, 87, .3);
 }

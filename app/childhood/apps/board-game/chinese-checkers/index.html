@@ -78,6 +78,8 @@
   <script src="../../../js/base-fix.js"></script>
   <link rel="stylesheet" href="game.css">
   <link rel="stylesheet" href="../board-game-theme.css">
+  <link rel="stylesheet" href="../board-game-layout.css">
+  <link rel="stylesheet" href="../board-game-skin.css?v=2">
   <script src="../../../js/baidu-analytics.js?v=1"></script>
   <script src="../../../js/common.js?v=21"></script>
   <script src="../../common/ai-difficulty.js"></script>
@@ -88,7 +90,7 @@
   <script src="../../common/room-ui.js"></script>
   <link rel="stylesheet" href="../../common/room-ui.css">
 </head>
-<body>
+<body class="board-skin theme-chinese-checkers">
 
   <!-- 模式选择界面 -->
   <div id="mode-selection" class="overlay">
@@ -196,11 +198,16 @@
       <!-- 棋盘 -->
       <svg id="board-svg"></svg>
 
+    </div>
+
+    <!-- 操作提示信息区域 -->
+    <div id="message"></div>
+
       <!-- 游戏规则面板 -->
       <div id="rules-panel">
-        <h3>📜 游戏规则</h3>
+        <h3>游戏规则</h3>
         <div class="rule-section">
-          <h4>🎯 游戏目标</h4>
+          <h4>游戏目标</h4>
           <ul>
             <li>将棋子移动到对角的目标营（沿棋盘直线方向）</li>
             <li>目标营 10 个点位全部被占满即获胜</li>
@@ -208,7 +215,7 @@
           </ul>
         </div>
         <div class="rule-section">
-          <h4>🎮 移动规则</h4>
+          <h4>移动规则</h4>
           <ul>
             <li>相邻移动：沿棋盘直线移动到相邻空位</li>
             <li>跳跃移动：越过紧邻的一枚棋子（任意颜色）落到其正后方空位</li>
@@ -217,21 +224,17 @@
           </ul>
         </div>
         <div class="rule-section">
-          <h4>👥 玩家颜色</h4>
+          <h4>玩家颜色</h4>
           <ul id="color-rules"></ul>
         </div>
         <div id="rule-pve" class="rule-section">
-          <h4>🤖 人机模式</h4>
+          <h4>人机模式</h4>
           <ul>
             <li>AI使用多因素加权贪心策略</li>
             <li>综合前进距离、跳跃效率、目标区域等因素</li>
           </ul>
         </div>
       </div>
-    </div>
-
-    <!-- 操作提示信息区域 -->
-    <div id="message"></div>
   </div>
 
   <!-- 游戏结束界面 -->

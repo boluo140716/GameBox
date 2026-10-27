@@ -60,7 +60,18 @@
   var BY_ID = {};
   ROSTER.forEach(function (ai) { BY_ID[ai.id] = ai; });
 
-  var state = { profiles: {}, bag: [], lastPair: [] };
+  var LINES = {
+    xiaoman: { win: '这局我跟得稳。', lose: '这手打得漂亮，我认。' },
+    afu: { win: '哈哈，这把我收下了！', lose: '痛快！下把再来。' },
+    ale: { win: '看到没，这就是气氛的力量。', lose: '输了也热闹，值了。' },
+    xiaobei: { win: '算过了，这局在我手里。', lose: '嗯，是我漏算了一步。' },
+    laok: { win: '年轻人，牌桌还长着呢。', lose: '这局记下了，加倍奉还。' },
+    tangtang: { win: '嘿嘿，糖糖今天手气好。', lose: '哼，下一局不让你啦。' },
+    aqi: { win: '响不响？我就说该炸。', lose: '没炸响，下把换个引线。' },
+    zhujie: { win: '赢一局，离新收藏又近一点。', lose: '没事，先把这局的牌记住。' }
+  };
+
+  var state = { profiles: {}, bag: [], lastPair: [], grudge: {} };
   var opts = { toast: function () {} };
   var overlay = null;
 
@@ -89,6 +100,8 @@
       beans: ai.beans,
       wins: 0,
       losses: 0,
+      vsWins: 0,
+      vsLosses: 0,
       owned: [],
       equipped: { frame: '', title: '' },
       lastPurchase: ''
@@ -111,6 +124,8 @@
       if (typeof p.beans !== 'number' || !isFinite(p.beans)) p.beans = ai.beans;
       if (typeof p.wins !== 'number') p.wins = 0;
       if (typeof p.losses !== 'number') p.losses = 0;
+      if (typeof p.vsWins !== 'number') p.vsWins = 0;
+      if (typeof p.vsLosses !== 'number') p.vsLosses = 0;
       if (!Array.isArray(p.owned)) p.owned = [];
       p.owned = p.owned.filter(function (id) { return !!validItem(id); });
       if (!p.equipped || typeof p.equipped !== 'object') p.equipped = { frame: '', title: '' };
@@ -131,6 +146,12 @@
         }
         if (Array.isArray(raw.lastPair)) {
           state.lastPair = raw.lastPair.filter(function (id) { return !!BY_ID[id]; }).slice(0, 2);
+        }
+        if (raw.grudge && typeof raw.grudge === 'object') {
+          state.grudge = {};
+          Object.keys(raw.grudge).forEach(function (id) {
+            if (BY_ID[id]) state.grudge[id] = Math.max(0, Number(raw.grudge[id]) || 0);
+          });
         }
       }
     } catch (e) {}
@@ -161,19 +182,26 @@
     state.bag = shuffle(ROSTER.map(function (ai) { return ai.id; }));
   }
 
-  function pickPair() {
-    state.bag = (state.bag || []).filter(function (id) { return !!BY_ID[id]; });
-    if (state.bag.length < 2) refillBag();
-    var pair = [state.bag.shift(), state.bag.shift()];
-    if (!pair[0] || !pair[1] || pair[0] === pair[1]) {
-      refillBag();
+  function pickPair(forceId) {
+    var pair;
+    if (forceId && BY_ID[forceId]) {
+      var others = ROSTER.filter(function (ai) { return ai.id !== forceId; }).map(function (ai) { return ai.id; });
+      pair = [forceId, others[Math.floor(Math.random() * others.length)]];
+      state.bag = (state.bag || []).filter(function (id) { return pair.indexOf(id) === -1; });
+    } else {
+      state.bag = (state.bag || []).filter(function (id) { return !!BY_ID[id]; });
+      if (state.bag.length < 2) refillBag();
       pair = [state.bag.shift(), state.bag.shift()];
-    }
-    if (state.lastPair.length === 2 && samePair(pair, state.lastPair)) {
-      refillBag();
-      var candidates = state.bag.filter(function (id) { return id !== pair[0]; });
-      pair[1] = candidates[Math.floor(Math.random() * candidates.length)];
-      state.bag = candidates.filter(function (id) { return id !== pair[1]; });
+      if (!pair[0] || !pair[1] || pair[0] === pair[1]) {
+        refillBag();
+        pair = [state.bag.shift(), state.bag.shift()];
+      }
+      if (state.lastPair.length === 2 && samePair(pair, state.lastPair)) {
+        refillBag();
+        var candidates = state.bag.filter(function (id) { return id !== pair[0]; });
+        pair[1] = candidates[Math.floor(Math.random() * candidates.length)];
+        state.bag = candidates.filter(function (id) { return id !== pair[1]; });
+      }
     }
     if (Math.random() < 0.5) pair.reverse();
     state.lastPair = pair.slice();
@@ -207,24 +235,47 @@
   }
 
   function settle(game) {
-    if (!game || !Array.isArray(game.opponents)) return [];
-    var events = [];
+    if (!game || !Array.isArray(game.opponents)) {
+      return { purchases: [], reactions: [], revenge: null };
+    }
+    var purchases = [];
+    var reactions = [];
+    var currentIds = [];
+    var playerWon = typeof game.youWin === 'boolean'
+      ? game.youWin
+      : (game.landlord === 0 ? game.winner === 0 : game.winner !== 0);
     game.opponents.forEach(function (meta, i) {
       var ai = BY_ID[meta && meta.id];
       if (!ai) return;
+      currentIds.push(ai.id);
       var profile = getProfile(ai.id);
       var playerIndex = i + 1;
       var isLandlord = game.landlord === playerIndex;
       var aiWin = isLandlord ? (game.winner === playerIndex) : (game.winner !== game.landlord);
+      // 只有“对手赢了你 / 你赢了对手”才算交锋，队友同赢同输不计
+      var aiBeatPlayer = aiWin && !playerWon;
+      var playerBeatAi = !aiWin && playerWon;
       var roleMultiplier = isLandlord ? 2 : 1;
       var delta = (aiWin ? 1 : -1) * game.base * game.multiplier * roleMultiplier;
       profile.beans = Math.max(0, profile.beans + delta);
       if (aiWin) profile.wins++;
       else profile.losses++;
+      if (aiBeatPlayer) profile.vsWins = (profile.vsWins || 0) + 1;
+      if (playerBeatAi) profile.vsLosses = (profile.vsLosses || 0) + 1;
       if (profile.beans < AI_FLOOR) profile.beans = AI_FLOOR;
+
+      // 玩家连输给同一个对手时积累“怨念”，到 2 局就可以发起复仇
+      if (aiBeatPlayer) {
+        state.grudge[ai.id] = (state.grudge[ai.id] || 0) + 1;
+        reactions.push(ai.name + '：' + quote(ai.id, 'win'));
+      } else {
+        state.grudge[ai.id] = 0;
+        if (playerBeatAi) reactions.push(ai.name + '：' + quote(ai.id, 'lose'));
+      }
+
       var item = maybeBuy(profile, ai);
       if (item) {
-        events.push({
+        purchases.push({
           ai: { id: ai.id, name: ai.name, avatar: ai.avatar },
           item: item,
           delta: delta,
@@ -232,8 +283,27 @@
         });
       }
     });
+
+    var revenge = null;
+    currentIds.forEach(function (id) {
+      var count = state.grudge[id] || 0;
+      if (count >= 2 && (!revenge || count > revenge.count)) {
+        var ai = BY_ID[id];
+        revenge = { id: id, name: ai.name, avatar: ai.avatar, count: count };
+      }
+    });
+
     save();
-    return events;
+    return { purchases: purchases, reactions: reactions, revenge: revenge };
+  }
+
+  function quote(id, kind) {
+    var ai = BY_ID[id];
+    var lines = LINES[id] || {};
+    var entry = lines[kind];
+    var pool = Array.isArray(entry) ? entry : (entry ? [entry] : []);
+    if (!pool.length) return ai ? ai.name + '：再来一局。' : '';
+    return pool[Math.floor(Math.random() * pool.length)];
   }
 
   function quoteBid(id) {
@@ -266,6 +336,8 @@
     var title = validItem(profile.equipped.title, 'title');
     var last = validItem(profile.lastPurchase);
     var frameClass = frame ? ' ' + frame.cls : '';
+    var grudge = (state.grudge && state.grudge[id]) || 0;
+    var grudgeText = grudge >= 2 ? ' · 你已经连输给他 ' + grudge + ' 局' : '';
     var recent = last
       ? '最近兑换：<strong>「' + last.name + '」' + itemKind(last) + '</strong>'
       : '最近兑换：<span>还没有在小铺花过盒豆</span>';
@@ -278,10 +350,11 @@
         '<p class="ai-profile-personality">' + ai.personality + '</p>' +
         '<div class="ai-profile-stats">' +
           '<div><span>盒豆</span><strong>' + fmt(profile.beans) + '</strong></div>' +
-          '<div><span>战绩</span><strong>' + profile.wins + ' 胜 / ' + profile.losses + ' 负</strong></div>' +
+          '<div><span>总战绩</span><strong>' + profile.wins + ' 胜 / ' + profile.losses + ' 负</strong></div>' +
+          '<div><span>对你的战绩</span><strong>' + (profile.vsWins || 0) + ' 胜 / ' + (profile.vsLosses || 0) + ' 负</strong></div>' +
         '</div>' +
         '<div class="ai-profile-recent">' + recent + '</div>' +
-        '<div class="ai-profile-note">AI 只买头像框和称号，不影响出牌和难度。</div>' +
+        '<div class="ai-profile-note">AI 只买头像框和称号，不影响出牌和难度。' + grudgeText + '</div>' +
         '<button type="button" class="btn ghost ai-profile-back">返回牌桌</button>' +
       '</div>';
     overlay.querySelector('.ai-profile-close').onclick = hideProfile;
@@ -304,6 +377,7 @@
     getProfile: getProfile,
     pickPair: pickPair,
     settle: settle,
+    quote: quote,
     quoteBid: quoteBid,
     openProfile: openProfile,
     closeProfile: hideProfile,

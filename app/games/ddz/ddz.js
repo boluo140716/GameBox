@@ -19,6 +19,7 @@
   var FIRST_WIN_BONUS = 300;
   var SOLVENT_FLOOR = 1000;
   var MAX_MULTIPLIER = 16;
+  var MAX_STREAK_BONUS = 20000;
   var ROOMS = [
     { id: 'novice', name: '新手场', base: 100, entry: 1000 },
     { id: 'standard', name: '标准场', base: 500, entry: 5000 },
@@ -435,9 +436,12 @@
     over: false,
     base: ROOMS[0].base,
     multiplier: 1,
+    stakeMult: 1,
     playCount: [0, 0, 0],
+    playerBombs: 0,
     reasons: [],
     opponents: [],
+    revengeId: '',
   };
 
   function playerName(p) {
@@ -452,10 +456,20 @@
   var timers = [];
 
   function loadStats() {
+    var empty = { win: 0, lose: 0, streak: 0, bestStreak: 0, bombs: 0, springs: 0, landlordWins: 0 };
     try {
       var s = JSON.parse(localStorage.getItem('gamebox_ddz_stats') || 'null');
-      return s && typeof s.win === 'number' ? s : { win: 0, lose: 0 };
-    } catch (e) { return { win: 0, lose: 0 }; }
+      if (!s || typeof s.win !== 'number') return empty;
+      return {
+        win: s.win,
+        lose: s.lose,
+        streak: Math.max(0, Number(s.streak) || 0),
+        bestStreak: Math.max(0, Number(s.bestStreak) || 0),
+        bombs: Math.max(0, Number(s.bombs) || 0),
+        springs: Math.max(0, Number(s.springs) || 0),
+        landlordWins: Math.max(0, Number(s.landlordWins) || 0)
+      };
+    } catch (e) { return empty; }
   }
   function saveStats() {
     try { localStorage.setItem('gamebox_ddz_stats', JSON.stringify(stats)); } catch (e) {}
@@ -547,7 +561,16 @@
   var selfTitle = document.getElementById('selfTitle');
   var resultShopBtn = document.getElementById('resultShopBtn');
   var roomShopBtn = document.getElementById('roomShopBtn');
+  var doubleOverlay = document.getElementById('doubleOverlay');
+  var doubleNoteEl = document.getElementById('doubleNote');
+  var soundBtnEl = document.getElementById('soundBtn');
+  var soundIconEl = document.getElementById('soundIcon');
+  var missionBtnEl = document.getElementById('missionBtn');
+  var missionBadgeEl = document.getElementById('missionBadge');
+  var streakBadgeEl = document.getElementById('streakBadge');
+  var revengeBtn = document.getElementById('revengeBtn');
   var toastTimer = null;
+  var revengeTargetId = '';
 
   function toast(msg) {
     toastEl.textContent = msg;
@@ -570,12 +593,14 @@
     var felt = equipped && equipped.felt ? window.DDZ_SHOP.getItem(equipped.felt) : null;
     var back = equipped && equipped.back ? window.DDZ_SHOP.getItem(equipped.back) : null;
     var frame = equipped && equipped.frame ? window.DDZ_SHOP.getItem(equipped.frame) : null;
+    var avatar = equipped && equipped.avatar ? window.DDZ_SHOP.getItem(equipped.avatar) : null;
     var title = equipped && equipped.title ? window.DDZ_SHOP.getItem(equipped.title) : null;
     if (appEl) {
       appEl.className = 'ddz' + (felt ? cosmeticClass(felt.id) : '') + (back ? cosmeticClass(back.id) : '');
     }
     if (youAvatar) {
       youAvatar.className = 'avatar you' + (frame ? cosmeticClass(frame.id) : '');
+      youAvatar.textContent = avatar && avatar.glyph ? avatar.glyph : '🙂';
     }
     if (selfTitle) {
       selfTitle.textContent = title ? title.name : '';
@@ -596,7 +621,28 @@
     walletBalanceEl.textContent = fmtBeans(wallet.beans);
     if (roomBalanceEl) roomBalanceEl.textContent = fmtBeans(wallet.beans);
     roomChipEl.textContent = currentRoom.name + ' · 底注 ' + fmtBeans(currentRoom.base);
-    multChipEl.textContent = '×' + S.multiplier;
+    multChipEl.textContent = '×' + S.multiplier + (S.stakeMult > 1 ? ' 注×' + S.stakeMult : '');
+    var streak = stats.streak || 0;
+    if (streakBadgeEl) {
+      streakBadgeEl.hidden = streak < 2;
+      streakBadgeEl.textContent = '🔥 ' + streak + ' 连胜';
+      streakBadgeEl.title = '最高连胜 ' + (stats.bestStreak || 0) + ' 局';
+    }
+    var claimable = window.DDZ_MISSIONS ? window.DDZ_MISSIONS.claimableCount() : 0;
+    if (missionBadgeEl) {
+      missionBadgeEl.hidden = claimable <= 0;
+      missionBadgeEl.textContent = claimable > 9 ? '9+' : String(claimable);
+    }
+    if (missionBtnEl) missionBtnEl.classList.toggle('has-reward', claimable > 0);
+  }
+
+  function renderSoundBtn() {
+    if (!soundBtnEl || !window.DDZ_SFX) return;
+    var on = window.DDZ_SFX.isEnabled();
+    soundBtnEl.classList.toggle('muted', !on);
+    soundBtnEl.setAttribute('aria-pressed', on ? 'true' : 'false');
+    soundBtnEl.title = on ? '音效已开' : '音效已关';
+    if (soundIconEl) soundIconEl.textContent = on ? '🔊' : '🔇';
   }
 
   function renderRoomList() {
@@ -630,7 +676,7 @@
   }
 
   function openRoomOverlay() {
-    if (S.phase === 'bid' || S.phase === 'play') {
+    if (S.phase === 'bid' || S.phase === 'play' || S.phase === 'double') {
       toast('本局结束后才能换场');
       return;
     }
@@ -774,6 +820,31 @@
       return;
     }
 
+    if (S.phase === 'double') {
+      var noDouble = document.createElement('button');
+      noDouble.className = 'btn ghost';
+      noDouble.textContent = '不加注';
+      noDouble.title = '按当前底注开局';
+      noDouble.onclick = function () { chooseDouble(1); };
+
+      var double2 = document.createElement('button');
+      double2.className = 'btn primary';
+      double2.textContent = '加倍 ×2';
+      double2.title = '本局你的输赢 ×2';
+      double2.onclick = function () { chooseDouble(2); };
+
+      var double4 = document.createElement('button');
+      double4.className = 'btn danger';
+      double4.textContent = '超级 ×4';
+      double4.title = '本局你的输赢 ×4，风险更高';
+      double4.onclick = function () { chooseDouble(4); };
+
+      actionBar.appendChild(noDouble);
+      actionBar.appendChild(double2);
+      actionBar.appendChild(double4);
+      return;
+    }
+
     if (S.phase !== 'play') return;
     if (S.turn !== 0) {
       actionBar.innerHTML = '<span class="waiting">' + playerName(S.turn) + ' 思考中…</span>';
@@ -839,12 +910,13 @@
 
   // ───────────────────────── 发牌 / 叫地主 ─────────────────────────
 
-  function startGame() {
+  function startGame(forceOpponent) {
     if (wallet.beans < currentRoom.entry) {
       openRoomOverlay();
       return;
     }
-    S.opponents = window.DDZ_OPPONENTS ? window.DDZ_OPPONENTS.pickPair() : [];
+    S.opponents = window.DDZ_OPPONENTS ? window.DDZ_OPPONENTS.pickPair(forceOpponent) : [];
+    S.revengeId = forceOpponent || '';
     clearTimers();
     turnToken++;
     S.hands = [[], [], []];
@@ -853,25 +925,34 @@
     S.turn = 0;
     S.last = null;
     S.passCount = 0;
-    S.phase = 'bid';
+    S.phase = 'deal';
     S.selected.clear();
     S.bidTurn = Math.floor(Math.random() * 3);
     S.bidCount = 0;
     S.over = false;
     S.base = currentRoom.base;
     S.multiplier = 1;
+    S.stakeMult = 1;
     S.playCount = [0, 0, 0];
+    S.playerBombs = 0;
     S.reasons = [];
     S.round++;
     overlay.hidden = true;
     roomOverlay.hidden = true;
+    if (doubleOverlay) doubleOverlay.hidden = true;
 
     var deck = shuffle(makeDeck());
     for (var i = 0; i < 51; i++) S.hands[i % 3].push(deck[i]);
     S.bottom = deck.slice(51);
     S.hands.forEach(sortHand);
 
-    message('叫地主阶段');
+    clearDealNodes();
+    message('发牌中…');
+    dealAnimation(beginBidding);
+  }
+
+  function beginBidding() {
+    S.phase = 'bid';
     renderAll();
     $('seat1').classList.remove('active');
     $('seat2').classList.remove('active');
@@ -879,9 +960,127 @@
     if (S.bidTurn === 0) {
       message('轮到你先叫地主');
     } else {
+      message('叫地主阶段');
       later(function () { aiBid(S.bidTurn); }, 700);
     }
     renderActions();
+  }
+
+  var dealNodes = [];
+
+  function clearDealNodes() {
+    dealNodes.forEach(function (n) { n.remove(); });
+    dealNodes = [];
+    Array.prototype.forEach.call(document.querySelectorAll('.deal-fly'), function (n) { n.remove(); });
+  }
+
+  function elementCenter(el) {
+    if (!el) return null;
+    var r = el.getBoundingClientRect();
+    if (!r.width && !r.height) return null;
+    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  }
+
+  function equippedBackClass() {
+    if (!window.DDZ_SHOP) return '';
+    var eq = window.DDZ_SHOP.getEquipped();
+    var item = eq && eq.back ? window.DDZ_SHOP.getItem(eq.back) : null;
+    return item && item.cls ? ' ' + item.cls : '';
+  }
+
+  // 发牌：51 张牌从桌面中央依次飞向三家，结束后再进入叫地主
+  function dealAnimation(done) {
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    handEl.innerHTML = '';
+    ['backs1', 'backs2'].forEach(function (id) {
+      var el = $(id);
+      if (el) el.innerHTML = '';
+    });
+    bottomEl.innerHTML = '';
+    actionBar.innerHTML = '';
+    lastCardsEl.innerHTML = '';
+    lastLabelEl.textContent = '准备开始';
+    ['count0', 'count1', 'count2'].forEach(function (id) {
+      var el = $(id);
+      if (el) el.textContent = '…';
+    });
+    ['seat1', 'seat2'].forEach(function (id) {
+      var seat = $(id);
+      if (!seat) return;
+      seat.classList.remove('active');
+      var badge = seat.querySelector('.landlord-badge');
+      if (badge) badge.hidden = true;
+    });
+    ['bubble1', 'bubble2'].forEach(function (id) {
+      var el = $(id);
+      if (el) { el.textContent = ''; el.classList.remove('show'); }
+    });
+    if ($('youLandlord')) $('youLandlord').hidden = true;
+
+    if (reduce || !appEl.animate) { done(); return; }
+
+    var box = appEl.getBoundingClientRect();
+    var from = { x: box.left + box.width / 2, y: box.top + box.height * 0.43 };
+    var targets = [elementCenter(handEl), elementCenter($('backs1')), elementCenter($('backs2'))];
+    targets = targets.map(function (t) { return t || from; });
+
+    var backCls = equippedBackClass();
+    var gap = 24;
+    var dur = 300;
+    var total = 51 * gap + dur + 80;
+
+    for (var i = 0; i < 51; i++) {
+      var to = targets[i % 3];
+      var el = document.createElement('div');
+      el.className = 'deal-fly' + backCls;
+      el.style.left = from.x + 'px';
+      el.style.top = from.y + 'px';
+      document.body.appendChild(el);
+      dealNodes.push(el);
+
+      var dx = to.x - from.x;
+      var dy = to.y - from.y;
+      var rot = Math.random() * 22 - 11;
+      el.animate([
+        { transform: 'translate(-50%, -50%) scale(.82)', opacity: 0 },
+        {
+          transform: 'translate(calc(-50% + ' + (dx * 0.2) + 'px), calc(-50% + ' + (dy * 0.2 - 14) + 'px)) rotate(' + (rot * 0.5) + 'deg) scale(1)',
+          opacity: 1,
+          offset: 0.3
+        },
+        { transform: 'translate(calc(-50% + ' + dx + 'px), calc(-50% + ' + dy + 'px)) rotate(' + rot + 'deg) scale(.94)', opacity: .92 }
+      ], {
+        duration: dur,
+        delay: i * gap,
+        easing: 'cubic-bezier(.25,.7,.3,1)',
+        fill: 'both'
+      });
+
+      if (i % 3 === 0) {
+        (function (delay) {
+          later(function () { sfx('deal', { rate: 0.94 + Math.random() * 0.12 }); }, delay);
+        })(i * gap + 40);
+      }
+      if (i % 6 === 0) {
+        (function (n, delay) {
+          later(function () {
+            ['count1', 'count2'].forEach(function (id) {
+              var el = $(id);
+              if (el) el.textContent = n + ' 张';
+            });
+          }, delay);
+        })(Math.min(17, Math.floor(i / 3) + 1), i * gap);
+      }
+    }
+
+    later(function () {
+      clearDealNodes();
+      done();
+    }, total);
+  }
+
+  function sfx(name, opts) {
+    if (window.DDZ_SFX) window.DDZ_SFX.play(name, opts);
   }
 
   function handStrength(hand) {
@@ -917,6 +1116,7 @@
       bidText = opp && window.DDZ_OPPONENTS ? window.DDZ_OPPONENTS.quoteBid(opp.id) : '叫地主！';
     }
     bubble(player, bidText);
+    sfx('tap');
     if (player === 0) message(call ? '你叫了地主' : '你选择不叫');
 
     if (call) {
@@ -944,14 +1144,41 @@
     S.landlord = player;
     S.hands[player] = S.hands[player].concat(S.bottom);
     sortHand(S.hands[player]);
-    S.phase = 'play';
+    S.phase = 'double';
     S.turn = player;
     S.last = null;
     S.passCount = 0;
+    sfx('tap');
     renderAll();
-    message(playerName(player) + ' 成为地主');
-    if (player !== 0) later(beginTurn, 900);
-    else renderActions();
+    message(playerName(player) + ' 成为地主 · 看完牌后选择是否加注');
+  }
+
+  // 开局加倍：只放大自己的输赢，不影响对手
+  function openDoubleOverlay() {
+    if (S.phase !== 'double' || S.over || !doubleOverlay) return;
+    var roleText = S.landlord === 0 ? '地主' : '农民';
+    var cap = S.base * Math.max(1, S.multiplier) * 4 * (S.landlord === 0 ? 2 : 1);
+    if (doubleNoteEl) {
+      doubleNoteEl.textContent = '你的身份：' + roleText + ' · 底注 ' + fmtBeans(S.base) +
+        ' · 超级加倍单局输赢约 ' + fmtBeans(cap) + ' 盒豆（炸弹、春天继续翻倍）';
+    }
+    doubleOverlay.hidden = false;
+  }
+
+  function chooseDouble(mult) {
+    if (S.phase !== 'double' || S.over) return;
+    S.stakeMult = mult;
+    doubleOverlay.hidden = true;
+    S.phase = 'play';
+    sfx('tap');
+    if (mult > 1) toast('本局已加注 ×' + mult);
+    renderAll();
+    if (S.landlord !== 0) {
+      later(beginTurn, 700);
+    } else {
+      message('轮到你出牌');
+      renderActions();
+    }
   }
 
   // ───────────────────────── 出牌流程 ─────────────────────────
@@ -1011,6 +1238,7 @@
     if (raised) {
       S.multiplier = Math.min(MAX_MULTIPLIER, S.multiplier * 2);
       S.reasons.push(pattern.name);
+      if (player === 0) S.playerBombs++;
     }
     var ids = new Set(cards.map(function (c) { return c.id; }));
     S.hands[player] = S.hands[player].filter(function (c) { return !ids.has(c.id); });
@@ -1019,6 +1247,7 @@
     lastPlayed = player;
     if (!fromAI) S.selected.clear();
     bubble(player, pattern.name + (raised ? ' ×2' : ''));
+    sfx(raised ? 'bomb' : 'play');
     renderAll();
     message(playerName(player) + ' 出 ' + pattern.name + (raised ? ' · 倍数 ×' + S.multiplier : ''));
 
@@ -1037,6 +1266,7 @@
       return;
     }
     bubble(player, '不出');
+    sfx('tap');
     S.passCount++;
     message(playerName(player) + ' 不出');
     S.turn = (player + 1) % 3;
@@ -1072,7 +1302,7 @@
   }
 
   function settleWallet(youWin) {
-    var stake = S.base * S.multiplier;
+    var stake = S.base * S.multiplier * (S.stakeMult || 1);
     var theoretical = youWin
       ? (S.landlord === 0 ? stake * 2 : stake)
       : -(S.landlord === 0 ? stake * 2 : stake);
@@ -1087,8 +1317,14 @@
       afterGame += firstWin;
       wallet.lastFirstWin = today;
     }
+    // 连胜加成：2 连胜 +10%，3 连胜 +20%，4 连胜 +30%，5 连胜及以上 +40%
+    var streakPct = youWin ? Math.min(0.4, Math.max(0, ((stats.streak || 0) - 1) * 0.1)) : 0;
+    var streakBonus = streakPct > 0 ? Math.min(MAX_STREAK_BONUS, Math.round(Math.abs(theoretical) * streakPct)) : 0;
+    afterGame += streakBonus;
     wallet.beans = afterGame;
-    if (delta > 0) wallet.biggestWin = Math.max(wallet.biggestWin || 0, delta);
+    if (delta + firstWin + streakBonus > 0) {
+      wallet.biggestWin = Math.max(wallet.biggestWin || 0, delta + firstWin + streakBonus);
+    }
     saveWallet();
 
     var bailout = ensureSolvent();
@@ -1098,6 +1334,8 @@
       after: wallet.beans,
       firstWin: firstWin,
       bailout: bailout,
+      streakBonus: streakBonus,
+      streakPct: streakPct,
       stake: stake,
       capped: delta !== theoretical
     };
@@ -1109,7 +1347,17 @@
     turnToken++;
     var landlordWin = winner === S.landlord;
     var youWin = (S.landlord === 0 && landlordWin) || (S.landlord !== 0 && !landlordWin);
-    if (youWin) stats.win++; else stats.lose++;
+    var prevStreak = stats.streak || 0;
+    if (youWin) {
+      stats.win++;
+      stats.streak = prevStreak + 1;
+      stats.bestStreak = Math.max(stats.bestStreak || 0, stats.streak);
+      if (S.landlord === 0) stats.landlordWins = (stats.landlordWins || 0) + 1;
+    } else {
+      stats.lose++;
+      stats.streak = 0;
+    }
+    stats.bombs = (stats.bombs || 0) + S.playerBombs;
     saveStats();
 
     var springName = '';
@@ -1123,27 +1371,61 @@
     if (springName) {
       S.multiplier = Math.min(MAX_MULTIPLIER, S.multiplier * 2);
       S.reasons.push(springName);
+      stats.springs = (stats.springs || 0) + 1;
+      saveStats();
     }
 
-    var aiEvents = [];
+    var aiResult = { purchases: [], reactions: [], revenge: null };
     if (window.DDZ_OPPONENTS && S.opponents && S.opponents.length) {
-      aiEvents = window.DDZ_OPPONENTS.settle({
+      aiResult = window.DDZ_OPPONENTS.settle({
         landlord: S.landlord,
         winner: winner,
+        youWin: youWin,
         base: S.base,
         multiplier: S.multiplier,
+        stakeMult: S.stakeMult,
         opponents: S.opponents
-      });
+      }) || aiResult;
     }
+
+    var result = settleWallet(youWin);
+
+    // 复仇局：赢了给一笔小额奖励，输了记下这笔账
+    var revengeWin = !!(youWin && S.revengeId);
+    var revengeBonus = 0;
+    if (revengeWin) {
+      revengeBonus = 300;
+      wallet.beans += revengeBonus;
+      saveWallet();
+      result.after = wallet.beans;
+    }
+
+    if (window.DDZ_MISSIONS) {
+      window.DDZ_MISSIONS.record({ win: youWin, bombs: S.playerBombs });
+    }
+
     var aiNews = '';
-    if (aiEvents.length) {
-      aiNews = '<br><span class="ai-news">对手动态：</span>' + aiEvents.map(function (e) {
+    if (aiResult.purchases && aiResult.purchases.length) {
+      aiNews = '<br><span class="ai-news">对手动态：</span>' + aiResult.purchases.map(function (e) {
         var kind = e.item.cat === 'frame' ? '头像框' : '称号';
         return e.ai.name + ' 换上了「' + e.item.name + '」' + kind;
       }).join('<br>');
     }
+    var reactionText = '';
+    if (aiResult.reactions && aiResult.reactions.length) {
+      reactionText = '<br><span class="ai-news">对手反应：</span>' + aiResult.reactions.map(function (line) {
+        return line;
+      }).join('<br>');
+    }
 
-    var result = settleWallet(youWin);
+    revengeTargetId = aiResult.revenge ? aiResult.revenge.id : '';
+    if (revengeBtn) {
+      revengeBtn.hidden = !revengeTargetId;
+      if (revengeTargetId) {
+        revengeBtn.textContent = '找 ' + aiResult.revenge.name + ' 复仇 · 已连输 ' + aiResult.revenge.count + ' 局';
+      }
+    }
+
     var deltaText = (result.delta >= 0 ? '+' : '') + fmtBeans(result.delta);
     var reasonText = S.reasons.length ? '<br>倍率来源：' + S.reasons.join('、') : '';
     var roleMult = S.landlord === 0 ? 2 : 1;
@@ -1151,18 +1433,26 @@
     var title = landlordWin ? '地主胜利' : '农民胜利';
     resultTitle.textContent = title;
     resultTitle.style.color = landlordWin ? 'var(--gb-amber)' : 'var(--gb-teal)';
+    var claimable = window.DDZ_MISSIONS ? window.DDZ_MISSIONS.claimableCount() : 0;
     resultSub.innerHTML =
       (youWin ? '🎉 你赢了这一局' : '😮 你输了这一局') +
       '<br>你的身份：' + (S.landlord === 0 ? '地主' : '农民') +
-      '<br>场次：' + currentRoom.name + ' · 底注 ' + fmtBeans(S.base) + ' × 倍数 ' + S.multiplier + ' × ' + roleText + ' = ' + fmtBeans(result.stake * roleMult) +
+      '<br>场次：' + currentRoom.name + ' · 底注 ' + fmtBeans(S.base) + ' × 倍数 ' + S.multiplier + (S.stakeMult > 1 ? ' × 加注 ' + S.stakeMult : '') + ' × ' + roleText + ' = ' + fmtBeans(result.stake * roleMult) +
       reasonText +
       '<br>本局盈亏：<span class="result-' + (result.delta >= 0 ? 'gain' : 'loss') + '">' + deltaText + ' 盒豆</span>' +
       (result.capped && result.delta < 0 ? '（余额不足，按实际余额结算）' : '') +
+      (result.streakBonus ? '<br>连胜 ' + stats.streak + ' 局 · 加成 +' + fmtBeans(result.streakBonus) + ' 盒豆（+' + Math.round(result.streakPct * 100) + '%）' : '') +
+      (!youWin && prevStreak >= 2 ? '<br>连胜中断（此前 ' + prevStreak + ' 连胜）' : '') +
       (result.firstWin ? '<br>每日首胜 +' + fmtBeans(result.firstWin) + ' 盒豆' : '') +
       (result.bailout ? '<br>破产补助 +' + fmtBeans(result.bailout) + ' 盒豆' : '') +
+      (revengeBonus ? '<br>复仇成功 +' + fmtBeans(revengeBonus) + ' 盒豆' : '') +
+      (S.revengeId && !youWin ? '<br>复仇失败，这笔账先记着。' : '') +
       '<br>盒豆：' + fmtBeans(result.before) + ' → ' + fmtBeans(result.after) +
-      '<br>战绩：' + stats.win + ' 胜 / ' + stats.lose + ' 负' +
+      '<br>战绩：' + stats.win + ' 胜 / ' + stats.lose + ' 负 · 当前 ' + (stats.streak || 0) + ' 连胜 · 最高 ' + (stats.bestStreak || 0) + ' 连胜' +
+      (claimable ? '<br>每日契约：有 ' + claimable + ' 个奖励可领取' : '') +
+      reactionText +
       aiNews;
+    sfx(youWin ? 'win' : 'lose');
     overlay.hidden = false;
     renderAll();
     message(title);
@@ -1183,6 +1473,36 @@
   window.addEventListener('resize', layoutHand);
 
   roomChipEl.addEventListener('click', openRoomOverlay);
+
+  if (soundBtnEl) {
+    soundBtnEl.addEventListener('click', function () {
+      if (!window.DDZ_SFX) return;
+      window.DDZ_SFX.setEnabled(!window.DDZ_SFX.isEnabled());
+      renderSoundBtn();
+    });
+  }
+  renderSoundBtn();
+
+  if (missionBtnEl) {
+    missionBtnEl.addEventListener('click', function () {
+      if (!window.DDZ_MISSIONS) { toast('每日契约正在加载'); return; }
+      window.DDZ_MISSIONS.open();
+    });
+  }
+
+  if (revengeBtn) {
+    revengeBtn.addEventListener('click', function () {
+      if (!revengeTargetId) return;
+      var id = revengeTargetId;
+      overlay.hidden = true;
+      startGame(id);
+    });
+  }
+
+  [['doubleNo', 1], ['doubleX2', 2], ['doubleX4', 4]].forEach(function (pair) {
+    var btn = document.getElementById(pair[0]);
+    if (btn) btn.addEventListener('click', function () { chooseDouble(pair[1]); });
+  });
 
   function openShop() {
     if (window.DDZ_SHOP) window.DDZ_SHOP.open();
@@ -1227,6 +1547,19 @@
       floor: SOLVENT_FLOOR,
       onEquip: applyPlayerCosmetics,
       toast: toast
+    });
+  }
+
+  if (window.DDZ_MISSIONS) {
+    window.DDZ_MISSIONS.init({
+      addBeans: function (amount) {
+        wallet.beans += amount;
+        saveWallet();
+        renderTopbar();
+        if (roomOverlay && !roomOverlay.hidden) renderRoomList();
+      },
+      toast: toast,
+      onChange: function () { renderTopbar(); }
     });
   }
   if (window.DDZ_OPPONENTS) window.DDZ_OPPONENTS.init({ toast: toast });

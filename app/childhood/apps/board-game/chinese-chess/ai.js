@@ -337,6 +337,7 @@
         },
         hard: { startDepth: Math.max(2, AI_DEPTH - 1), maxDepth: AI_MAX_DEPTH + 1, time: 2200 },
         master: { startDepth: AI_DEPTH, maxDepth: AI_MAX_DEPTH + 2, time: 3200 },
+        grandmaster: { startDepth: AI_DEPTH + 1, maxDepth: AI_MAX_DEPTH + 2, time: 4200 },
       }[level] || {
         startDepth: Math.max(1, AI_DEPTH - 2),
         maxDepth: AI_MAX_DEPTH,

@@ -1,12 +1,13 @@
 /* 游戏盒 GameBox — 游戏清单
  * childhood（27 款）来源：https://github.com/AloysHF/childhood
- * 另外 7 款由游戏盒重制为纯前端单机玩法，不依赖服务端。
+ * 另外 8 款由游戏盒重制为纯前端单机玩法，不依赖服务端。
  */
 window.GAMEBOX_GAMES = [
   // ── 经典四件套（首屏推荐）──
   {
     id: 'g2048', name: '2048', icon: '🔢', cat: 'arcade', tag: '街机休闲', featured: true,
     kind: 'local', src: 'games/g2048/index.html',
+    img: 'covers/g2048.png',
     desc: '重制版 2048：经典 4×4 合并玩法，撤销、最高分、键盘与触屏滑动。',
   },
   {
@@ -24,6 +25,7 @@ window.GAMEBOX_GAMES = [
   {
     id: 'klotski', name: '华容道', icon: '🧩', cat: 'arcade', tag: '益智', featured: true,
     kind: 'local', src: 'games/klotski/index.html',
+    img: 'covers/klotski.png',
     desc: '重制版华容道：横刀立马、拖动/方向键、撤销、最佳步数。',
   },
 
@@ -31,12 +33,20 @@ window.GAMEBOX_GAMES = [
   {
     id: 'ddz', name: '斗地主', icon: '🃏', cat: 'table', tag: '牌桌',
     kind: 'local', src: 'games/ddz/index.html',
+    img: 'covers/ddz.png',
     desc: '单机三人斗地主，你 vs 两个 AI，支持提示、炸弹、王炸。',
   },
   {
     id: 'mahjong', name: '麻将', icon: '🀄', cat: 'table', tag: '牌桌',
     kind: 'local', src: 'games/mahjong/index.html',
+    img: 'covers/mahjong.png',
     desc: '推倒胡单机版，你 vs 三个 AI，支持吃、碰、杠、胡。',
+  },
+  {
+    id: 'werewolf', name: '狼人杀', icon: '🐺', cat: 'table', tag: '推理',
+    kind: 'local', src: 'games/werewolf/index.html',
+    img: 'covers/werewolf.png',
+    desc: '六人 / 九人单机狼人杀，你 vs 五个或八个规则 AI；发言、查验、用药、投票，找出藏在月夜里的狼。',
   },
   // ── 童年棋牌：卡牌 ──
   {
@@ -175,16 +185,19 @@ window.GAMEBOX_GAMES = [
   {
     id: 'spider', name: '蜘蛛纸牌', icon: '🕷️', cat: 'arcade', tag: '纸牌',
     kind: 'local', src: 'games/spider/index.html',
+    img: 'covers/spider.png',
     desc: '重制版蜘蛛纸牌：单/双/四花色、撤销、提示、最佳成绩。',
   },
   {
     id: 'minesweeper', name: '扫雷', icon: '💣', cat: 'arcade', tag: '益智',
     kind: 'local', src: 'games/minesweeper/index.html',
+    img: 'covers/minesweeper.png',
     desc: '重制版扫雷：三种难度、首击安全、长按插旗、最佳成绩。',
   },
   {
     id: 'link', name: '消消乐', icon: '🍬', cat: 'arcade', tag: '消除',
     kind: 'local', src: 'games/linklink/index.html',
+    img: 'covers/link.png',
     desc: '相邻滑动三连消除：连锁、连击、步数目标与关卡进度，手机触屏友好。',
   },
 

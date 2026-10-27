@@ -143,6 +143,14 @@
   letter-spacing: .3px;
   white-space: nowrap;
 }
+.m3-btns .btn.icon {
+  width: 32px;
+  padding: 7px 0;
+  font-size: 13px;
+  line-height: 1;
+  text-align: center;
+}
+.m3-btns .btn.icon.muted { opacity: .6; }
 
 /* ───────── 棋盘 ───────── */
 .m3-main {
@@ -500,6 +508,7 @@
   .m3-tools { gap: 6px; }
   .chip { padding: 6px 9px; font-size: 10px; }
   .m3-btns .btn { padding: 6px 9px; font-size: 10px; }
+  .m3-btns .btn.icon { width: 28px; padding: 6px 0; }
   .m3-main { padding: 7px 9px 0; }
   .m3-foot { padding: 3px 11px 7px; }
   .m3-footinfo { font-size: 9px; }
@@ -510,6 +519,7 @@
   .m3-stat { min-width: 53px; padding: 4px 6px 5px; }
   .m3-stat strong { font-size: 15px; }
   .m3-btns .btn { padding: 5px 7px; }
+  .m3-btns .btn.icon { width: 26px; padding: 5px 0; }
 }
 @media (max-height: 620px) and (orientation: landscape) {
   .m3-top { padding: 5px 12px; gap: 7px; }

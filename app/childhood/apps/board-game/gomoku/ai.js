@@ -99,7 +99,8 @@
           ? emptyCells[Math.floor(Math.random() * emptyCells.length)]
           : null;
       }
-      const attackWeight = { normal: 1, hard: 1.08, master: 1.16 }[level] || 1;
+      const attackWeight = { normal: 1, hard: 1.08, master: 1.16, grandmaster: 1.3 }[level] || 1;
+      const topLevel = level === "master" || level === "grandmaster";
       const scoreAI = [];
       const scoreHuman = [];
       for (let i = 0; i < BOARD_SIZE; i++) {
@@ -153,7 +154,7 @@
 
           const center = Math.floor(BOARD_SIZE / 2);
           const centerBonus =
-            level === "master" ? BOARD_SIZE - Math.abs(x - center) - Math.abs(y - center) : 0;
+            topLevel ? BOARD_SIZE - Math.abs(x - center) - Math.abs(y - center) : 0;
           const s = scoreAI[x][y] * attackWeight + scoreHuman[x][y] + centerBonus;
           if (s > maxScore) {
             maxScore = s;
@@ -189,7 +190,8 @@
       // gains on their reply, so moves that hand the opponent a four, an
       // open three or a double threat lose to safer moves of similar value.
       // Master additionally prefers creating its own open-four / double-three.
-      const threatFactor = level === "master" ? 1 : 0.9;
+      const threatFactor = level === "grandmaster" ? 1.12 : level === "master" ? 1 : 0.9;
+      const candidateLimit = level === "grandmaster" ? 16 : level === "master" ? 10 : SEARCH_CANDIDATES;
       const candidates = [];
       for (let y = 0; y < BOARD_SIZE; y++) {
         for (let x = 0; x < BOARD_SIZE; x++) {
@@ -197,13 +199,13 @@
           if (scoreAI[x][y] === 0 && scoreHuman[x][y] === 0) continue;
           const center = Math.floor(BOARD_SIZE / 2);
           const centerBonus =
-            level === "master" ? BOARD_SIZE - Math.abs(x - center) - Math.abs(y - center) : 0;
+            topLevel ? BOARD_SIZE - Math.abs(x - center) - Math.abs(y - center) : 0;
           const s = scoreAI[x][y] * attackWeight + scoreHuman[x][y] + centerBonus;
           candidates.push({ x: x, y: y, s: s });
         }
       }
       candidates.sort((a, b) => b.s - a.s);
-      const top = candidates.slice(0, SEARCH_CANDIDATES);
+      const top = candidates.slice(0, candidateLimit);
 
       let bestCandidate = top[0];
       let bestAdjusted = -Infinity;
@@ -218,12 +220,13 @@
         // Prefer creating multiple open three-or-better lines (double threat).
         const myDoubles = openThreatCount(nextBoard, aiPlayer);
         const oppDoubles = openThreatCount(nextBoard, humanPlayer);
+        const topFactor = level === "grandmaster" ? 1.25 : level === "master" ? 1 : 0.8;
         const adjusted =
           candidate.s +
-          myThreat * 0.25 +
-          Math.max(0, myDoubles - 1) * 2500 * (level === "master" ? 1 : 0.8) -
+          myThreat * (level === "grandmaster" ? 0.3 : 0.25) +
+          Math.max(0, myDoubles - 1) * 2500 * topFactor -
           oppThreat * threatFactor -
-          Math.max(0, oppDoubles - 1) * 3000;
+          Math.max(0, oppDoubles - 1) * (level === "grandmaster" ? 3800 : 3000);
         if (adjusted > bestAdjusted) {
           bestAdjusted = adjusted;
           bestCandidate = candidate;

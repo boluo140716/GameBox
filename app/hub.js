@@ -19,9 +19,50 @@
   var searchEl = document.getElementById('searchInput');
   var chipsEl = document.getElementById('chips');
 
-  var state = { cat: 'all', query: '', currentId: null };
+  var state = { cat: 'all', query: '', currentId: null, favs: [], recent: [] };
   var homeScroll = 0;
   var loaderTimer = null;
+
+  var FAV_KEY = 'gamebox_favs_v1';
+  var RECENT_KEY = 'gamebox_recent_v1';
+
+  function loadIdList(key) {
+    try {
+      var arr = JSON.parse(localStorage.getItem(key) || '[]');
+      if (!Array.isArray(arr)) return [];
+      return arr.filter(function (id) { return !!byId[id]; });
+    } catch (e) { return []; }
+  }
+
+  function saveIdList(key, list) {
+    try { localStorage.setItem(key, JSON.stringify(list)); } catch (e) {}
+  }
+
+  function isFav(id) { return state.favs.indexOf(id) >= 0; }
+
+  function toggleFav(id) {
+    if (!byId[id]) return;
+    var i = state.favs.indexOf(id);
+    if (i >= 0) state.favs.splice(i, 1);
+    else state.favs.unshift(id);
+    saveIdList(FAV_KEY, state.favs);
+    renderGrid();
+    updateFavChip();
+  }
+
+  function markRecent(id) {
+    if (!byId[id]) return;
+    state.recent = [id].concat(state.recent.filter(function (x) { return x !== id; })).slice(0, 10);
+    saveIdList(RECENT_KEY, state.recent);
+  }
+
+  function updateFavChip() {
+    var el = document.getElementById('favCount');
+    if (el) el.textContent = String(state.favs.length);
+  }
+
+  state.favs = loadIdList(FAV_KEY);
+  state.recent = loadIdList(RECENT_KEY);
 
   function showLoaderSoon() {
     clearTimeout(loaderTimer);
@@ -40,15 +81,58 @@
     return encodeURI(path).replace(/#/g, '%23');
   }
 
+  function fallbackLabel(g) {
+    if (!g) return '·';
+    if (g.name === '2048') return '2048';
+    return (g.name || g.icon || '·').charAt(0);
+  }
+
   function play(id) {
     if (!byId[id]) return;
+    markRecent(id);
     location.hash = '#/play/' + encodeURIComponent(id);
+  }
+
+  function addRankChip(host, g) {
+    if (!window.GameRank || !window.GameRank.hasGame(g.id)) return;
+    var d = window.GameRank.describe(g.id);
+    if (!d) return;
+    var chip = document.createElement('span');
+    chip.className = 'gr-hub-chip' + (d.pending ? ' pending' : '');
+    chip.setAttribute('role', 'button');
+    chip.setAttribute('tabindex', '0');
+    chip.setAttribute('aria-label', g.name + '棋力 ' + d.tier + '，查看段位');
+    chip.title = d.tier + ' ' + d.starText + ' · ' + d.title + ' · 棋力 ' + d.rating;
+    chip.innerHTML = '<i style="background:' + d.color + '"></i>' + d.tier + ' ' + d.starText;
+    function openRank(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      window.GameRank.open(g.id);
+    }
+    chip.addEventListener('click', openRank);
+    chip.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') openRank(e);
+    });
+    host.appendChild(chip);
+  }
+
+  function refreshRankChips() {
+    if (!window.GameRank) return;
+    window.GameRank.reload();
+    document.querySelectorAll('.gr-hub-chip').forEach(function (el) { el.remove(); });
+    GAMES.forEach(function (g) {
+      var featured = document.querySelector('#featured .feature-card[data-id="' + g.id + '"]');
+      if (featured) addRankChip(featured, g);
+      var card = document.querySelector('#grid .card[data-id="' + g.id + '"]');
+      if (card) addRankChip(card.querySelector('.thumb') || card, g);
+    });
   }
 
   function makeFeatureCard(g) {
     var btn = document.createElement('button');
     btn.className = 'feature-card' + (g.img ? '' : ' emoji');
     btn.type = 'button';
+    btn.dataset.id = g.id;
     btn.setAttribute('aria-label', '打开 ' + g.name);
 
     var bg = document.createElement('span');
@@ -62,8 +146,8 @@
 
     if (!g.img) {
       var art = document.createElement('span');
-      art.className = 'emoji-art';
-      art.textContent = g.icon;
+      art.className = 'feature-fallback';
+      art.textContent = fallbackLabel(g);
       btn.appendChild(art);
     }
 
@@ -84,6 +168,8 @@
     body.appendChild(desc);
     btn.appendChild(body);
 
+    addRankChip(btn, g);
+
     btn.addEventListener('click', function () { play(g.id); });
     return btn;
   }
@@ -102,10 +188,11 @@
     } else {
       var fb = document.createElement('div');
       fb.className = 'fallback';
-      fb.textContent = g.icon;
+      fb.textContent = fallbackLabel(g);
       thumb.appendChild(fb);
     }
     btn.appendChild(thumb);
+    addRankChip(thumb, g);
 
     var meta = document.createElement('div');
     meta.className = 'meta';
@@ -119,6 +206,27 @@
     meta.appendChild(tag);
     btn.appendChild(meta);
 
+    var fav = document.createElement('span');
+    fav.className = 'fav-btn' + (isFav(g.id) ? ' on' : '');
+    fav.textContent = isFav(g.id) ? '★' : '☆';
+    fav.setAttribute('role', 'button');
+    fav.setAttribute('tabindex', '0');
+    fav.setAttribute('aria-label', isFav(g.id) ? '取消收藏' : '收藏');
+    fav.title = isFav(g.id) ? '取消收藏' : '收藏';
+    fav.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleFav(g.id);
+    });
+    fav.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleFav(g.id);
+      }
+    });
+    btn.appendChild(fav);
+
     btn.addEventListener('click', function () { play(g.id); });
     return btn;
   }
@@ -129,6 +237,30 @@
     list.forEach(function (g) { featuredEl.appendChild(makeFeatureCard(g)); });
   }
 
+  function renderRecent() {
+    var wrap = document.getElementById('recentWrap');
+    var listEl = document.getElementById('recent');
+    if (!wrap || !listEl) return;
+    var ids = state.recent.filter(function (id) { return !!byId[id]; }).slice(0, 8);
+    var show = ids.length > 0 && state.cat === 'all' && !state.query.trim();
+    wrap.hidden = !show;
+    if (!show) return;
+    listEl.innerHTML = '';
+    ids.forEach(function (id) {
+      var g = byId[id];
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'recent-item';
+      btn.title = '继续玩 ' + g.name;
+      btn.innerHTML =
+        '<span class="recent-icon">' + (g.icon || '🎮') + '</span>' +
+        '<span class="recent-name">' + g.name + '</span>' +
+        '<span class="recent-go">继续 →</span>';
+      btn.addEventListener('click', function () { play(id); });
+      listEl.appendChild(btn);
+    });
+  }
+
   function renderGrid() {
     var q = state.query.trim().toLowerCase();
     var filtering = !!q || state.cat !== 'all';
@@ -137,6 +269,7 @@
     gridEl.innerHTML = '';
     GAMES.forEach(function (g) {
       if (g.featured && !filtering) return; // 推荐位已单独展示
+      if (state.cat === 'fav' && !isFav(g.id)) return;
       if (state.cat === 'childhood' && g.kind !== 'childhood') return;
       if (state.cat === 'card' && g.cat !== 'card') return;
       if (state.cat === 'table' && g.cat !== 'table') return;
@@ -149,6 +282,11 @@
       shown++;
     });
     emptyEl.hidden = shown !== 0;
+    emptyEl.textContent = state.cat === 'fav'
+      ? '还没有收藏，点卡片右上角的 ☆ 就能收藏。'
+      : '没有找到这个游戏，换个关键词试试。';
+    updateFavChip();
+    renderRecent();
   }
 
   function applyRoute() {
@@ -189,8 +327,10 @@
     hideLoader();
     frame.src = 'about:blank';
     state.currentId = null;
-    document.title = '游戏盒 GameBox · 34 款经典小游戏';
+    document.title = '游戏盒 GameBox · 35 款经典小游戏';
     window.scrollTo(0, homeScroll);
+    renderRecent();
+    refreshRankChips();
   }
 
   function goHome() {
@@ -215,6 +355,25 @@
     frame.src = 'about:blank';
     setTimeout(function () { frame.src = g.src; }, 30);
   });
+
+  var fullBtn = document.getElementById('fullBtn');
+  if (fullBtn) {
+    fullBtn.addEventListener('click', function () {
+      if (document.fullscreenElement) {
+        if (document.exitFullscreen) document.exitFullscreen();
+        return;
+      }
+      if (playerEl.requestFullscreen) {
+        playerEl.requestFullscreen().catch(function () {});
+      }
+    });
+    document.addEventListener('fullscreenchange', function () {
+      var on = !!document.fullscreenElement;
+      fullBtn.textContent = on ? '⤢' : '⛶';
+      fullBtn.title = on ? '退出全屏' : '全屏';
+      fullBtn.setAttribute('aria-label', on ? '退出全屏' : '全屏');
+    });
+  }
 
   // 游戏内的“返回大厅 / 退出”按钮 → 回到游戏盒
   window.addEventListener('message', function (e) {

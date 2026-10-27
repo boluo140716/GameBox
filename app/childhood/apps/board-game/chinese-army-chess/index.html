@@ -79,6 +79,8 @@
   <script src="../../../js/base-fix.js"></script>
   <link rel="stylesheet" href="game.css">
   <link rel="stylesheet" href="../board-game-theme.css">
+  <link rel="stylesheet" href="../board-game-layout.css">
+  <link rel="stylesheet" href="../board-game-skin.css?v=2">
   <script src="../../../js/baidu-analytics.js?v=1"></script>
   <script src="../../../js/common.js?v=21"></script>
   <script src="../../common/ai-difficulty.js"></script>
@@ -89,7 +91,7 @@
   <script src="../../common/room-ui.js"></script>
   <link rel="stylesheet" href="../../common/room-ui.css">
 </head>
-<body>
+<body class="board-skin theme-army-chess">
 
   <!-- 模式选择界面 -->
   <div id="mode-selection" class="overlay">
@@ -203,6 +205,23 @@
     <!-- 主游戏区域：棋盘 + 规则面板 -->
     <div id="game-main">
       <div id="board-container"></div>
+
+    </div>
+
+    <!-- 被吃掉的棋子展示区域 -->
+    <div id="captured-area">
+      <div class="captured-section">
+        <h3 class="red-text">红方被吃</h3>
+        <div id="captured-red" class="captured-cards"></div>
+      </div>
+      <div class="captured-section">
+        <h3 class="blue-text">蓝方被吃</h3>
+        <div id="captured-blue" class="captured-cards"></div>
+      </div>
+    </div>
+
+    <!-- 操作提示信息区域 -->
+    <div id="message"></div>
 
       <!-- 游戏规则面板 -->
       <div id="rules-panel">
@@ -363,7 +382,7 @@
             </ul>
           </div>
           <div id="rule-pve" class="rule-section">
-            <h4>🤖 人机模式</h4>
+            <h4>人机模式</h4>
             <ul>
               <li>AI使用优先级贪心策略</li>
               <li>优先吃子、翻棋，按战斗价值评分选择</li>
@@ -371,22 +390,6 @@
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- 被吃掉的棋子展示区域 -->
-    <div id="captured-area">
-      <div class="captured-section">
-        <h3 class="red-text">红方被吃</h3>
-        <div id="captured-red" class="captured-cards"></div>
-      </div>
-      <div class="captured-section">
-        <h3 class="blue-text">蓝方被吃</h3>
-        <div id="captured-blue" class="captured-cards"></div>
-      </div>
-    </div>
-
-    <!-- 操作提示信息区域 -->
-    <div id="message"></div>
   </div>
 
   <!-- 游戏结束界面 -->

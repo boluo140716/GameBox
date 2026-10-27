@@ -79,6 +79,8 @@
   <script src="../../../js/base-fix.js"></script>
   <link rel="stylesheet" href="game.css">
   <link rel="stylesheet" href="../board-game-theme.css">
+  <link rel="stylesheet" href="../board-game-layout.css">
+  <link rel="stylesheet" href="../board-game-skin.css?v=2">
   <script src="../../../js/baidu-analytics.js?v=1"></script>
   <script src="../../../js/common.js?v=21"></script>
   <script src="../../common/ai-difficulty.js"></script>
@@ -89,7 +91,7 @@
   <script src="../../common/room-ui.js"></script>
   <link rel="stylesheet" href="../../common/room-ui.css">
 </head>
-<body>
+<body class="board-skin theme-reversi">
 
   <!-- 模式选择界面 -->
   <div id="mode-selection" class="overlay">
@@ -192,11 +194,16 @@
         <!-- 通过JavaScript动态生成8x8棋盘 -->
       </div>
 
+    </div>
+
+    <!-- 操作提示信息区域 -->
+    <div id="message"></div>
+
       <!-- 游戏规则面板 -->
       <div id="rules-panel">
-        <h3>📜 游戏规则</h3>
+        <h3>游戏规则</h3>
         <div class="rule-section">
-          <h4>🎮 基本规则</h4>
+          <h4>基本规则</h4>
           <ul>
             <li>黑白棋（翻转棋）是8x8棋盘游戏</li>
             <li>黑棋先行，双方轮流落子</li>
@@ -204,7 +211,7 @@
           </ul>
         </div>
         <div class="rule-section">
-          <h4>📍 落子规则</h4>
+          <h4>落子规则</h4>
           <ul>
             <li>落子必须在合法位置</li>
             <li>必须夹住对方棋子</li>
@@ -212,7 +219,7 @@
           </ul>
         </div>
         <div class="rule-section">
-          <h4>🔍 夹子规则</h4>
+          <h4>夹子规则</h4>
           <ul>
             <li>夹子可以是直线方向</li>
             <li>也可以是斜线方向</li>
@@ -220,7 +227,7 @@
           </ul>
         </div>
         <div class="rule-section">
-          <h4>🏆 胜负判定</h4>
+          <h4>胜负判定</h4>
           <ul>
             <li>当双方都无法落子时游戏结束</li>
             <li>棋子多的一方获胜</li>
@@ -228,7 +235,7 @@
           </ul>
         </div>
         <div class="rule-section">
-          <h4>🎮 基本操作</h4>
+          <h4>基本操作</h4>
           <ul>
             <li>点击棋盘上的合法位置落子</li>
             <li>当前玩家无合法位置时自动跳过</li>
@@ -236,17 +243,13 @@
           </ul>
         </div>
         <div id="rule-pve" class="rule-section">
-          <h4>🤖 人机模式</h4>
+          <h4>人机模式</h4>
           <ul>
             <li>AI使用贪心策略（翻转最多棋子）</li>
             <li>每步选择翻转数最多的位置</li>
           </ul>
         </div>
       </div>
-    </div>
-
-    <!-- 操作提示信息区域 -->
-    <div id="message"></div>
   </div>
 
   <!-- 游戏结束界面 -->

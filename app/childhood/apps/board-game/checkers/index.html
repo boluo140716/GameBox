@@ -78,6 +78,8 @@
   <script src="../../../js/base-fix.js"></script>
   <link rel="stylesheet" href="game.css">
   <link rel="stylesheet" href="../board-game-theme.css">
+  <link rel="stylesheet" href="../board-game-layout.css">
+  <link rel="stylesheet" href="../board-game-skin.css?v=2">
   <script src="../../../js/baidu-analytics.js?v=1"></script>
   <script src="../../../js/common.js?v=21"></script>
   <script src="../../common/ai-difficulty.js"></script>
@@ -88,7 +90,7 @@
   <script src="../../common/room-ui.js"></script>
   <link rel="stylesheet" href="../../common/room-ui.css">
 </head>
-<body>
+<body class="board-skin theme-checkers">
 
   <!-- 模式选择界面 -->
   <div id="mode-selection" class="overlay">
@@ -185,11 +187,16 @@
       <!-- 棋盘 -->
       <canvas id="board-canvas"></canvas>
 
+    </div>
+
+    <!-- 操作提示信息区域 -->
+    <div id="message"></div>
+
       <!-- 游戏规则面板 -->
       <div id="rules-panel">
-        <h3>📜 游戏规则</h3>
+        <h3>游戏规则</h3>
         <div class="rule-section">
-          <h4>🎮 基本规则（国际跳棋 10×10 制）</h4>
+          <h4>基本规则（国际跳棋 10×10 制）</h4>
           <ul>
             <li>10×10棋盘，双方各20枚棋子，位于深色格上</li>
             <li>红方先手，位于上方</li>
@@ -197,7 +204,7 @@
           </ul>
         </div>
         <div class="rule-section">
-          <h4>🔄 移动方式</h4>
+          <h4>移动方式</h4>
           <ul>
             <li>普通棋子斜向前进一格</li>
             <li>王棋（飞行王）可沿斜线滑行任意距离</li>
@@ -205,7 +212,7 @@
           </ul>
         </div>
         <div class="rule-section">
-          <h4>⚔️ 吃子规则</h4>
+          <h4>吃子规则</h4>
           <ul>
             <li>跳过相邻敌子到其身后空位（前后皆可）</li>
             <li>王棋可远距离飞吃，落点任选其身后空位</li>
@@ -215,24 +222,20 @@
           </ul>
         </div>
         <div class="rule-section">
-          <h4>🏆 胜利条件</h4>
+          <h4>胜利条件</h4>
           <ul>
             <li>吃光对方所有棋子</li>
             <li>对方无合法移动</li>
           </ul>
         </div>
         <div id="rule-pve" class="rule-section">
-          <h4>🤖 人机模式</h4>
+          <h4>人机模式</h4>
           <ul>
             <li>AI使用Alpha-Beta剪枝</li>
             <li>搜索深度4层</li>
           </ul>
         </div>
       </div>
-    </div>
-
-    <!-- 操作提示信息区域 -->
-    <div id="message"></div>
   </div>
 
   <!-- 游戏结束界面 -->

@@ -79,6 +79,8 @@
   <script src="../../../js/base-fix.js"></script>
   <link rel="stylesheet" href="game.css">
   <link rel="stylesheet" href="../board-game-theme.css">
+  <link rel="stylesheet" href="../board-game-layout.css">
+  <link rel="stylesheet" href="../board-game-skin.css?v=2">
   <script src="../../../js/baidu-analytics.js?v=1"></script>
   <script src="../../../js/common.js?v=21"></script>
   <script src="../../common/ai-difficulty.js"></script>
@@ -89,7 +91,7 @@
   <script src="../../common/room-ui.js"></script>
   <link rel="stylesheet" href="../../common/room-ui.css">
 </head>
-<body>
+<body class="board-skin theme-dou-shou-qi">
 
   <!-- 模式选择界面 -->
   <div id="mode-selection" class="overlay">
@@ -186,24 +188,29 @@
       <!-- 棋盘 -->
       <canvas id="board-canvas"></canvas>
 
+    </div>
+
+    <!-- 操作提示信息区域 -->
+    <div id="message"></div>
+
       <!-- 游戏规则面板 -->
       <div id="rules-panel">
-        <h3>📜 游戏规则</h3>
+        <h3>游戏规则</h3>
         <div class="rule-section">
-          <h4>🏆 等级排列</h4>
+          <h4>等级排列</h4>
           <ul>
             <li>象 > 狮 > 虎 > 豹 > 狼 > 狗 > 猫 > 鼠</li>
             <li>鼠可吃象（逆袭）</li>
           </ul>
         </div>
         <div class="rule-section">
-          <h4>🔄 基本走法</h4>
+          <h4>基本走法</h4>
           <ul>
             <li>每次移动一步，仅限上下左右（正交方向）</li>
           </ul>
         </div>
         <div class="rule-section">
-          <h4>🌊 特殊地形</h4>
+          <h4>特殊地形</h4>
           <ul>
             <li>河流：仅鼠可入水</li>
             <li>水中之鼠不能吃岸上棋子（含象），岸上棋子也不能吃水中之鼠</li>
@@ -214,7 +221,7 @@
           </ul>
         </div>
         <div class="rule-section">
-          <h4>⚔️ 吃子规则</h4>
+          <h4>吃子规则</h4>
           <ul>
             <li>等级相同或更高可吃对方（象8>狮7>虎6>豹5>狼4>狗3>猫2>鼠1）</li>
             <li>鼠可吃象；象不能吃鼠</li>
@@ -223,7 +230,7 @@
           </ul>
         </div>
         <div class="rule-section">
-          <h4>🏆 胜利条件</h4>
+          <h4>胜利条件</h4>
           <ul>
             <li>己方棋子进入对方兽穴</li>
             <li>吃光对方所有棋子</li>
@@ -231,17 +238,13 @@
           </ul>
         </div>
         <div id="rule-pve" class="rule-section">
-          <h4>🤖 人机模式</h4>
+          <h4>人机模式</h4>
           <ul>
             <li>AI使用Alpha-Beta剪枝</li>
             <li>搜索深度3层</li>
           </ul>
         </div>
       </div>
-    </div>
-
-    <!-- 操作提示信息区域 -->
-    <div id="message"></div>
   </div>
 
   <!-- 游戏结束界面 -->

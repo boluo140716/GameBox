@@ -32,3 +32,9 @@ Thumbs.db
 # Environment files
 .env
 .env.*
+
+# Packaged builds (keep out of git; distribute via Releases)
+release-final/
+
+# Local agent workspace (screenshots, scratch state)
+.superpowers/

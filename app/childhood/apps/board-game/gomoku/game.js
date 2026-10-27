@@ -255,34 +255,43 @@ if (typeof document !== "undefined") {
 
   function initBoard() {
     canvas = document.getElementById("board-canvas");
-    canvas.width = canvasSize;
-    canvas.height = canvasSize;
+    const ratio = Math.min(window.devicePixelRatio || 1, 3);
+    canvas.width = Math.round(canvasSize * ratio);
+    canvas.height = Math.round(canvasSize * ratio);
+    canvas.style.width = canvasSize + "px";
+    canvas.style.height = "auto";
     context = canvas.getContext("2d");
+    context.setTransform(ratio, 0, 0, ratio, 0, 0);
     drawBoard();
   }
 
-  function drawBoard() {
-    // Shared wooden board base and grain
-    BoardGameTheme.drawWoodenBoard(context, canvasSize, canvasSize);
+  function boardStyle() {
+    return window.GameSkins ? window.GameSkins.boardPalette() : BoardGameTheme.DEFAULT_BOARD;
+  }
 
-    // Carved grid lines
-    context.strokeStyle = BoardGameTheme.PALETTE.carve;
-    context.lineWidth = 1.2;
+  function pieceStyle() {
+    return window.GameSkins ? window.GameSkins.piecePalette() : BoardGameTheme.DEFAULT_PIECES;
+  }
+
+  function drawBoard() {
+    const style = boardStyle();
+    BoardGameTheme.drawBoardSurface(context, canvasSize, canvasSize, style);
+
+    // Crisp grid lines, kept at a logical width so DPR scaling sharpens them.
+    context.strokeStyle = style.grid;
+    context.lineWidth = 1.15;
     for (let i = 0; i < BOARD_SIZE; i++) {
       const pos = MARGIN + i * CELL_SIZE;
-      // Vertical lines
       context.beginPath();
       context.moveTo(pos, MARGIN);
       context.lineTo(pos, MARGIN + (BOARD_SIZE - 1) * CELL_SIZE);
       context.stroke();
-      // Horizontal lines
       context.beginPath();
       context.moveTo(MARGIN, pos);
       context.lineTo(MARGIN + (BOARD_SIZE - 1) * CELL_SIZE, pos);
       context.stroke();
     }
 
-    // Carved center and star points
     const starPoints = [
       { x: 3, y: 3 },
       { x: 3, y: 11 },
@@ -290,12 +299,12 @@ if (typeof document !== "undefined") {
       { x: 11, y: 3 },
       { x: 11, y: 11 },
     ];
-    context.fillStyle = BoardGameTheme.PALETTE.carve;
+    context.fillStyle = style.star;
     for (const sp of starPoints) {
       const sx = MARGIN + sp.x * CELL_SIZE;
       const sy = MARGIN + sp.y * CELL_SIZE;
       context.beginPath();
-      context.arc(sx, sy, 3, 0, Math.PI * 2);
+      context.arc(sx, sy, 3.1, 0, Math.PI * 2);
       context.fill();
     }
   }
@@ -303,26 +312,28 @@ if (typeof document !== "undefined") {
   function drawStone(x, y, player) {
     const cx = MARGIN + x * CELL_SIZE;
     const cy = MARGIN + y * CELL_SIZE;
-    BoardGameTheme.glossyDisc(
+    BoardGameTheme.drawStoneDisc(
       context,
       cx,
       cy,
       STONE_RADIUS,
-      player === BLACK ? "#3a3f44" : "#f2f2f2"
+      player === BLACK ? "black" : "white",
+      pieceStyle().stone
     );
   }
 
   function drawLastMoveMarker(x, y) {
     const cx = MARGIN + x * CELL_SIZE;
     const cy = MARGIN + y * CELL_SIZE;
-    context.strokeStyle = "rgba(229, 57, 53, 0.9)";
-    context.lineWidth = 2.5;
+    context.strokeStyle = pieceStyle().stone.last || "#e53935";
+    context.lineWidth = 2;
     context.beginPath();
-    context.arc(cx, cy, 5, 0, Math.PI * 2);
+    context.arc(cx, cy, 4.6, 0, Math.PI * 2);
     context.stroke();
   }
 
   function drawWinLine(line) {
+    const color = boardStyle().win || "#e53935";
     context.beginPath();
     const sx = MARGIN + line[0].x * CELL_SIZE;
     const sy = MARGIN + line[0].y * CELL_SIZE;
@@ -332,11 +343,13 @@ if (typeof document !== "undefined") {
       const ey = MARGIN + line[i].y * CELL_SIZE;
       context.lineTo(ex, ey);
     }
-    // Glow underneath, then a crisp bright line on top
-    context.strokeStyle = "rgba(229, 57, 53, 0.35)";
+    context.save();
+    context.globalAlpha = 0.35;
+    context.strokeStyle = color;
     context.lineWidth = 8;
     context.stroke();
-    context.strokeStyle = "#e53935";
+    context.restore();
+    context.strokeStyle = color;
     context.lineWidth = 3;
     context.stroke();
   }
@@ -437,6 +450,25 @@ if (typeof document !== "undefined") {
       SoundManager.play("draw");
       winnerText.textContent = "平局！";
     }
+
+    if (window.GameRank) {
+      const rankResult = window.GameRank.record("gomoku", {
+        mode: state.mode,
+        result: state.winner ? (state.winner === state.playerTeam ? "win" : "loss") : "draw",
+        difficulty: window.GameRank.effectiveDifficulty(
+          state.rankDifficulty,
+          window.AIDifficulty ? window.AIDifficulty.getLevel() : "normal"
+        ),
+      });
+      window.GameRank.renderResult(rankResult);
+      window.GameRank.refreshBadge("gomoku");
+      if (window.AIDifficulty) {
+        window.AIDifficulty.setBaseline(window.GameRank.recommendedDifficulty("gomoku"));
+        window.AIDifficulty.setGrandmasterUnlocked(window.GameRank.canChallengeGrandmaster("gomoku"));
+      }
+      if (window.GameSkins) window.GameSkins.refreshButtons();
+    }
+
     document.getElementById("game-over").style.display = "flex";
   }
 
@@ -446,8 +478,8 @@ if (typeof document !== "undefined") {
     if (gameState.mode === "online" && gameState.currentPlayer !== localTeam) return;
 
     const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
+    const scaleX = canvasSize / rect.width;
+    const scaleY = canvasSize / rect.height;
     const px = (e.clientX - rect.left) * scaleX;
     const py = (e.clientY - rect.top) * scaleY;
 
@@ -517,9 +549,14 @@ if (typeof document !== "undefined") {
   }
 
   function startGame(mode, firstPlayer) {
+    if (window.AIDifficulty && window.GameRank) {
+      window.AIDifficulty.setBaseline(window.GameRank.recommendedDifficulty("gomoku"));
+      window.AIDifficulty.setGrandmasterUnlocked(window.GameRank.canChallengeGrandmaster("gomoku"));
+    }
     gameState = createGameState(mode);
     gameState.currentPlayer = firstPlayer || BLACK;
     gameState.firstPlayer = firstPlayer || BLACK;
+    gameState.rankDifficulty = window.AIDifficulty ? window.AIDifficulty.getLevel() : "normal";
 
     if (mode === "pve") {
       if (firstPlayer === BLACK) {
@@ -900,6 +937,17 @@ if (typeof document !== "undefined") {
     });
 
     document.getElementById("btn-restart").addEventListener("click", restartGame);
+
+    if (window.GameRank) window.GameRank.mountBadge("gomoku", "#status-bar");
+    if (window.GameSkins) window.GameSkins.mountButton("#status-bar", "gomoku");
+    if (window.AIDifficulty && window.GameRank) {
+      window.AIDifficulty.setBaseline(window.GameRank.recommendedDifficulty("gomoku"));
+      window.AIDifficulty.setGrandmasterUnlocked(window.GameRank.canChallengeGrandmaster("gomoku"));
+    }
+
+    window.addEventListener("gamebox-skins-change", () => {
+      if (gameState) renderGame(gameState);
+    });
 
     document.getElementById("mode-selection").style.display = "flex";
     document.getElementById("rps-section").style.display = "none";

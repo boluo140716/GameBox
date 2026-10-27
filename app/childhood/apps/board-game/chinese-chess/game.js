@@ -883,14 +883,22 @@ if (typeof document !== "undefined") {
 
   function initBoard() {
     canvas = document.getElementById("board-canvas");
-    const ratio = window.devicePixelRatio || 1;
-    canvas.width = BOARD_W * ratio;
-    canvas.height = BOARD_H * ratio;
+    const ratio = Math.min(window.devicePixelRatio || 1, 3);
+    canvas.width = Math.round(BOARD_W * ratio);
+    canvas.height = Math.round(BOARD_H * ratio);
     canvas.style.width = BOARD_W + "px";
-    canvas.style.height = BOARD_H + "px";
+    canvas.style.height = "auto";
     context = canvas.getContext("2d");
-    context.scale(ratio, ratio);
+    context.setTransform(ratio, 0, 0, ratio, 0, 0);
     drawBoard();
+  }
+
+  function boardStyle() {
+    return window.GameSkins ? window.GameSkins.boardPalette() : BoardGameTheme.DEFAULT_BOARD;
+  }
+
+  function pieceStyle() {
+    return window.GameSkins ? window.GameSkins.piecePalette() : BoardGameTheme.DEFAULT_PIECES;
   }
 
   function toCanvasX(c) {
@@ -903,11 +911,11 @@ if (typeof document !== "undefined") {
   }
 
   function drawBoard() {
-    // Shared wooden board base and grain
-    BoardGameTheme.drawWoodenBoard(context, BOARD_W, BOARD_H);
+    const style = boardStyle();
+    BoardGameTheme.drawBoardSurface(context, BOARD_W, BOARD_H, style);
 
     // Carved outer frame
-    context.strokeStyle = BoardGameTheme.PALETTE.frame;
+    context.strokeStyle = style.frame;
     context.lineWidth = 3;
     context.strokeRect(
       toCanvasX(0) - CELL_SIZE / 2,
@@ -917,8 +925,8 @@ if (typeof document !== "undefined") {
     );
 
     // Carved grid lines
-    context.strokeStyle = BoardGameTheme.PALETTE.carve;
-    context.lineWidth = 1.6;
+    context.strokeStyle = style.grid;
+    context.lineWidth = 1.5;
 
     // Horizontal lines
     for (let r = 0; r < ROWS; r++) {
@@ -970,10 +978,10 @@ if (typeof document !== "undefined") {
     context.textAlign = "center";
     context.textBaseline = "middle";
     const riverY = (toCanvasY(4) + toCanvasY(5)) / 2;
-    context.fillStyle = "rgba(0, 0, 0, 0.25)";
+    context.fillStyle = "rgba(0, 0, 0, 0.18)";
     context.fillText("楚 河", toCanvasX(2) + 1, riverY + 1);
     context.fillText("漢 界", toCanvasX(6) + 1, riverY + 1);
-    context.fillStyle = BoardGameTheme.PALETTE.carve;
+    context.fillStyle = style.riverText || style.grid;
     context.fillText("楚 河", toCanvasX(2), riverY);
     context.fillText("漢 界", toCanvasX(6), riverY);
   }
@@ -982,31 +990,15 @@ if (typeof document !== "undefined") {
     const cx = toCanvasX(c);
     const cy = toCanvasY(r);
     const color = getOwner(piece);
-
-    // Wooden disc with the shared glossy material
-    BoardGameTheme.glossyDisc(context, cx, cy, PIECE_RADIUS, "#e8d5a8", {
-      light: 0.75,
-      dark: 0.42,
-      rim: "#5a3d1a",
-      rimWidth: 2.5,
-      highlight: "rgba(255, 255, 255, 0.18)",
-    });
-
-    // Inner decorative ring
-    context.strokeStyle = "#8b6914";
-    context.lineWidth = 1.5;
-    context.beginPath();
-    context.arc(cx, cy, PIECE_RADIUS - 4, 0, Math.PI * 2);
-    context.stroke();
-
-    // Character with a subtle relief (shadow then main text)
-    context.font = 'bold 22px "KaiTi", "楷体", "STKaiti", serif';
-    context.textAlign = "center";
-    context.textBaseline = "middle";
-    context.fillStyle = "rgba(0, 0, 0, 0.22)";
-    context.fillText(PIECE_NAMES[piece], cx + 1, cy + 2);
-    context.fillStyle = color === RED ? "#b71c1c" : "#141414";
-    context.fillText(PIECE_NAMES[piece], cx, cy + 1);
+    BoardGameTheme.drawPieceDisc(
+      context,
+      cx,
+      cy,
+      PIECE_RADIUS,
+      PIECE_NAMES[piece],
+      color === RED ? "red" : "black",
+      pieceStyle().chess
+    );
   }
 
   function drawSelection(c, r) {
@@ -1052,9 +1044,8 @@ if (typeof document !== "undefined") {
   }
 
   function renderGame(state) {
-    const ratio = window.devicePixelRatio || 1;
-    context.setTransform(1, 0, 0, 1, 0, 0);
-    context.scale(ratio, ratio);
+    const ratio = Math.min(window.devicePixelRatio || 1, 3);
+    context.setTransform(ratio, 0, 0, ratio, 0, 0);
     drawBoard();
 
     if (state.lastMove) drawLastMove(state.lastMove);
@@ -1171,6 +1162,25 @@ if (typeof document !== "undefined") {
       winnerText.textContent = "平局！";
       winnerText.className = "";
     }
+
+    if (window.GameRank) {
+      const rankResult = window.GameRank.record("chinese-chess", {
+        mode: state.mode,
+        result: state.winner ? (state.winner === state.playerTeam ? "win" : "loss") : "draw",
+        difficulty: window.GameRank.effectiveDifficulty(
+          state.rankDifficulty,
+          window.AIDifficulty ? window.AIDifficulty.getLevel() : "normal"
+        ),
+      });
+      window.GameRank.renderResult(rankResult);
+      window.GameRank.refreshBadge("chinese-chess");
+      if (window.AIDifficulty) {
+        window.AIDifficulty.setBaseline(window.GameRank.recommendedDifficulty("chinese-chess"));
+        window.AIDifficulty.setGrandmasterUnlocked(window.GameRank.canChallengeGrandmaster("chinese-chess"));
+      }
+      if (window.GameSkins) window.GameSkins.refreshButtons();
+    }
+
     document.getElementById("game-over").style.display = "flex";
   }
 
@@ -1306,10 +1316,15 @@ if (typeof document !== "undefined") {
   }
 
   function startGame(mode, playerTeam) {
+    if (window.AIDifficulty && window.GameRank) {
+      window.AIDifficulty.setBaseline(window.GameRank.recommendedDifficulty("chinese-chess"));
+      window.AIDifficulty.setGrandmasterUnlocked(window.GameRank.canChallengeGrandmaster("chinese-chess"));
+    }
     gameState = createGameState(mode);
     // In Chinese Chess, RED always moves first
     gameState.currentPlayer = RED;
     gameState.firstPlayer = RED;
+    gameState.rankDifficulty = window.AIDifficulty ? window.AIDifficulty.getLevel() : "normal";
     gameState.boardFlipped = false;
 
     if (mode === "pve") {
@@ -1677,6 +1692,17 @@ if (typeof document !== "undefined") {
     });
 
     document.getElementById("btn-restart").addEventListener("click", restartGame);
+
+    if (window.GameRank) window.GameRank.mountBadge("chinese-chess", "#status-bar");
+    if (window.GameSkins) window.GameSkins.mountButton("#status-bar", "chinese-chess");
+    if (window.AIDifficulty && window.GameRank) {
+      window.AIDifficulty.setBaseline(window.GameRank.recommendedDifficulty("chinese-chess"));
+      window.AIDifficulty.setGrandmasterUnlocked(window.GameRank.canChallengeGrandmaster("chinese-chess"));
+    }
+
+    window.addEventListener("gamebox-skins-change", () => {
+      if (gameState) renderGame(gameState);
+    });
 
     document.getElementById("mode-selection").style.display = "flex";
     document.getElementById("rps-section").style.display = "none";

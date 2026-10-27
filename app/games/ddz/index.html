@@ -1,12 +1,12 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
   <title>斗地主 · 单机</title>
   <link rel="stylesheet" href="../theme.css?v=2" />
-  <link rel="stylesheet" href="ddz.css?v=7" />
-  <link rel="stylesheet" href="shop.css?v=1" />
+  <link rel="stylesheet" href="ddz.css?v=12" />
+  <link rel="stylesheet" href="shop.css?v=6" />
 </head>
 <body>
   <div id="app" class="ddz">
@@ -14,6 +14,8 @@
       <div class="ddz-brand">斗地主<span>单机</span></div>
       <button class="room-chip" id="roomChip" type="button" title="选择场次">新手场 · 底注 100</button>
       <span class="mult-chip" id="multChip" title="当前倍数">×1</span>
+      <button class="sound-btn" id="soundBtn" type="button" aria-label="音效开关" aria-pressed="true" title="音效已开"><span id="soundIcon">🔊</span></button>
+      <button class="mission-btn" id="missionBtn" type="button" title="每日契约" aria-label="每日契约">📜<span class="mission-badge" id="missionBadge" hidden>0</span></button>
       <button class="wallet-chip" id="walletChip" type="button" title="打开盒豆小铺"><span>盒豆</span><strong id="walletBalance">3000</strong></button>
     </header>
     <main class="ddz-table">
@@ -66,6 +68,7 @@
           <div class="avatar you" id="youAvatar">🙂</div>
           <strong>你</strong>
           <span class="self-title" id="selfTitle" hidden></span>
+          <span class="streak-badge" id="streakBadge" hidden></span>
           <span class="badge landlord-badge" id="youLandlord" hidden>地主</span>
           <span class="self-count" id="count0">17 张</span>
         </div>
@@ -79,6 +82,7 @@
         <h2 id="resultTitle">游戏结束</h2>
         <p class="sub" id="resultSub"></p>
         <button class="result-shop-link" id="resultShopBtn" type="button">去小铺看看 →</button>
+        <button class="result-revenge" id="revengeBtn" type="button" hidden></button>
         <div class="actions">
           <button class="btn ghost" id="changeRoomBtn">换场</button>
           <button class="btn primary" id="againBtn">再来一局</button>
@@ -97,11 +101,30 @@
       </div>
     </div>
 
+    <div class="overlay" id="doubleOverlay" hidden>
+      <div class="overlay-card double-card">
+        <h2>要加倍吗？</h2>
+        <p class="sub">加倍只放大你自己的输赢，对手不受影响。</p>
+        <div class="double-options">
+          <button class="btn ghost" id="doubleNo" type="button">不加倍</button>
+          <button class="btn primary" id="doubleX2" type="button">加倍 ×2</button>
+          <button class="btn primary super" id="doubleX4" type="button">超级加倍 ×4</button>
+        </div>
+        <p class="double-note" id="doubleNote"></p>
+      </div>
+    </div>
+
     <div class="toast" id="toast"></div>
   </div>
 
-  <script src="shop.js?v=1"></script>
-  <script src="opponents.js?v=1"></script>
-  <script src="ddz.js?v=8"></script>
+  <script src="../shared/sfx.js?v=2"></script>
+  <script src="sfx.js?v=7"></script>
+  <script src="shop.js?v=6"></script>
+  <script src="opponents.js?v=2"></script>
+  <script src="missions.js?v=1"></script>
+  <script src="ddz.js?v=13"></script>
 </body>
 </html>
+
+
+

@@ -1,0 +1,135 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+  <title>狼人杀 · 6 / 9 人单机</title>
+  <link rel="stylesheet" href="../theme.css?v=2" />
+  <link rel="stylesheet" href="werewolf.css?v=8" />
+</head>
+<body>
+  <div id="app" class="ww is-night">
+    <header class="ww-topbar">
+      <div class="ww-brand">狼人杀<span id="brandMode">6 人单机</span></div>
+      <div class="ww-phase" id="phaseChip">
+        <span id="phaseIcon">🌙</span>
+        <b id="phaseText">第 1 夜</b>
+      </div>
+      <button class="ww-icon" id="restartBtn" type="button" title="重新开局" aria-label="重新开局">↻</button>
+      <button class="ww-icon" id="helpBtn" type="button" title="规则" aria-label="规则">?</button>
+    </header>
+
+    <main class="ww-main">
+      <section class="ww-table-wrap" aria-label="牌桌">
+        <div class="ww-scene" aria-hidden="true">
+          <div class="ww-moon"></div>
+          <div class="ww-cloud c1"></div>
+          <div class="ww-cloud c2"></div>
+          <div class="ww-cloud c3"></div>
+          <div class="ww-village">
+            <i class="h1"></i><i class="h2"></i><i class="h3"></i><i class="h4"></i><i class="h5"></i>
+            <i class="h6"></i><i class="h7"></i><i class="h8"></i>
+          </div>
+        </div>
+
+        <div class="ww-table">
+          <div class="ww-center" id="centerInfo">
+            <div class="ww-center-kicker" id="centerKicker">旧木匣 · 月夜村庄</div>
+            <h1 class="ww-center-title" id="centerTitle">六人入座</h1>
+            <p class="ww-center-sub" id="centerSub">天黑之后，有人会摘下人的面具。</p>
+            <span class="ww-alive-pill" id="alivePill">存活 6 / 6</span>
+          </div>
+          <div class="ww-seats" id="seats" aria-live="polite"></div>
+        </div>
+
+        <div class="ww-rolebar" id="roleBar"></div>
+      </section>
+
+      <aside class="ww-side" aria-label="发言与线索">
+        <div class="ww-tabs" role="tablist">
+          <button class="ww-tab active" type="button" data-tab="log" role="tab">发言</button>
+          <button class="ww-tab" type="button" data-tab="clues" role="tab">线索</button>
+          <span class="ww-side-count" id="sideCount">0</span>
+        </div>
+        <div class="ww-scroll" id="logPanel">
+          <div class="ww-log" id="logList"></div>
+        </div>
+        <div class="ww-scroll" id="cluePanel" hidden>
+          <div class="ww-clues" id="clueList"></div>
+        </div>
+      </aside>
+    </main>
+
+    <section class="ww-bottom" id="bottomPanel" aria-live="polite"></section>
+
+    <div class="ww-overlay" id="startOverlay">
+      <div class="ww-modal ww-start">
+        <div class="ww-eyebrow">GAMEBOX · 推理夜局</div>
+        <div class="ww-start-head">
+          <div class="ww-seal">狼</div>
+          <div>
+            <h1 id="startTitle">六人狼人杀</h1>
+            <p id="startSub">你是唯一的真人，另外五个人围坐在旧木桌旁。有人戴着狼面具。</p>
+          </div>
+        </div>
+        <div class="ww-mode-switch" role="group" aria-label="选择局制">
+          <button class="ww-mode-btn active" type="button" data-mode="6">
+            <b>6 人局</b><small>快节奏 · 双狼</small>
+          </button>
+          <button class="ww-mode-btn" type="button" data-mode="9">
+            <b>9 人局</b><small>三狼 · 猎人 · 高难度</small>
+          </button>
+        </div>
+        <div class="ww-rolecards" id="startRoleCards"></div>
+        <div class="ww-start-stats" id="startStats"></div>
+        <button class="ww-btn primary big" id="startBtn" type="button">入座开局</button>
+        <button class="ww-btn ghost" id="startHelpBtn" type="button">先看规则</button>
+        <p class="ww-fineprint" id="startFine">完全离线 · 5 个规则 AI · 无网络请求</p>
+      </div>
+    </div>
+
+    <div class="ww-overlay" id="resultOverlay" hidden>
+      <div class="ww-modal ww-result">
+        <div class="ww-result-mark" id="resultMark">胜</div>
+        <div class="ww-eyebrow" id="resultEyebrow">好人阵营</div>
+        <h1 id="resultTitle">村庄守住了</h1>
+        <p class="ww-lead" id="resultSub"></p>
+        <div class="ww-result-roles" id="resultRoles"></div>
+        <div class="ww-result-replay" id="resultReplay"></div>
+        <div class="ww-result-stats" id="resultStats"></div>
+        <div class="ww-result-actions">
+          <button class="ww-btn primary" id="againBtn" type="button">再来一局</button>
+          <button class="ww-btn ghost" id="homeBtn" type="button">返回首页</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ww-overlay" id="helpOverlay" hidden>
+      <div class="ww-modal ww-help">
+        <div class="ww-eyebrow">月夜规则</div>
+        <h1 id="helpTitle">六人局怎么玩</h1>
+        <div id="helpContent"></div>
+        <button class="ww-btn primary" id="helpClose" type="button">知道了</button>
+      </div>
+    </div>
+
+    <div class="ww-overlay" id="profileOverlay" hidden>
+      <div class="ww-modal ww-profile">
+        <div id="profileHead"></div>
+        <div id="profileBody"></div>
+        <button class="ww-btn ghost" id="profileClose" type="button">关闭</button>
+      </div>
+    </div>
+
+    <div class="ww-flash" id="flash" hidden></div>
+    <div class="ww-toast" id="toast" role="status"></div>
+  </div>
+
+  <script src="engine.js?v=7"></script>
+  <script src="speech.js?v=2"></script>
+  <script src="ai.js?v=8"></script>
+  <script src="ui.js?v=14"></script>
+</body>
+</html>
+
+

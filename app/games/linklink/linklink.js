@@ -45,6 +45,7 @@
   var resultTarget = document.getElementById('resultTarget');
   var nextBtn = document.getElementById('nextBtn');
   var retryBtn = document.getElementById('retryBtn');
+  var soundBtn = document.getElementById('soundBtn');
   var toastEl = document.getElementById('toast');
 
   var slotLayer = null;
@@ -64,6 +65,19 @@
     return new Promise(function (resolve) {
       setTimeout(resolve, fastMode ? Math.min(8, ms) : ms);
     });
+  }
+
+  function sfx(name, opts) {
+    if (window.LINK_SFX) window.LINK_SFX.play(name, opts);
+  }
+
+  function renderSound() {
+    if (!soundBtn || !window.LINK_SFX) return;
+    var on = window.LINK_SFX.isEnabled();
+    soundBtn.textContent = on ? '🔊' : '🔇';
+    soundBtn.classList.toggle('muted', !on);
+    soundBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    soundBtn.title = on ? '音效已开' : '音效已关';
   }
 
   function emptyGrid(rows, cols) {
@@ -510,6 +524,7 @@
       });
 
       var gained = scoreFor(cells.length, combo);
+      sfx(cells.length >= 5 || combo >= 3 ? 'big' : 'match');
       S.score += gained;
       updateBest();
       updateUI();
@@ -586,6 +601,7 @@
     swapCells(a, b);
     setTransform(a);
     setTransform(b);
+    sfx('swap');
 
     return delay(170).then(function () {
       var matches = findMatches();
@@ -593,6 +609,7 @@
         swapCells(a, b);
         setTransform(a);
         setTransform(b);
+        sfx('fail');
         a.el.classList.add('shake');
         b.el.classList.add('shake');
         setTimeout(function () {
@@ -663,6 +680,7 @@
 
   function showResult(win) {
     var ratio = S.target ? S.score / S.target : 0;
+    sfx(win ? 'win' : 'lose');
     var starCount = win ? (ratio >= 1.55 ? 3 : ratio >= 1.25 ? 2 : 1) : 0;
     var starEls = starsEl.querySelectorAll('span');
 
@@ -805,6 +823,7 @@
   function shuffleBoard(auto) {
     if (!S || S.over) return Promise.resolve(false);
     if (S.busy && !auto) return Promise.resolve(false);
+    sfx('shuffle');
     var prevBusy = S.busy;
     S.busy = true;
     clearSelection();
@@ -855,6 +874,7 @@
 
   function hint() {
     if (!S || S.busy || S.over) return;
+    sfx('tap');
     var mv = findMove();
     if (!mv) {
       toast('没有可消除的组合，自动洗牌');
@@ -912,6 +932,13 @@
     });
 
     hintBtn.addEventListener('click', hint);
+    if (soundBtn) {
+      soundBtn.addEventListener('click', function () {
+        if (!window.LINK_SFX) return;
+        window.LINK_SFX.setEnabled(!window.LINK_SFX.isEnabled());
+        renderSound();
+      });
+    }
     shuffleBtn.addEventListener('click', function () { shuffleBoard(false); });
     restartBtn.addEventListener('click', function () {
       if (!S || S.busy) return;
@@ -995,6 +1022,7 @@
     } catch (e) {}
     newGame(diff, 1);
     bindEvents();
+    renderSound();
     requestAnimationFrame(function () {
       layout();
       if (!fastMode) setStatus('滑动或点击相邻图块交换');
